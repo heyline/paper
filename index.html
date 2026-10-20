@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>申论文字练习</title>
+<style>
+:root{
+  --bg:#f0efeb;--paper:#fffefa;--text:#34342f;--muted:#85857e;
+  --line:#d4d3cc;--accent:#a57a32;--active:#fff0c9;
+  --selected:#d8e8fa;--panel:#fff;--btn:#f7f6f1;
+}
+body.dark{
+  color-scheme:dark;
+  --bg:#202124;--paper:#292a2d;--text:#e5e5e1;--muted:#a2a2a0;
+  --line:#4b4c50;--accent:#e1bd74;--active:#4b402b;
+  --selected:#354d68;--panel:#292a2d;--btn:#37383c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif}
+button,select{
+  font:inherit;color:var(--text);background:var(--btn);
+  border:1px solid var(--line);border-radius:6px;padding:7px 11px;
+  cursor:pointer
+}
+button:hover,select:hover{border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.toolbar{
+  position:sticky;top:0;z-index:10;display:flex;align-items:center;
+  gap:8px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);
+  border-bottom:1px solid var(--line)
+}
+.brand{font-weight:600;font-size:15px;margin-right:5px}
+.spacer{flex:1}
+.status{color:var(--muted);font-size:12px}
+.stats{
+  display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  background:var(--panel);border-bottom:1px solid var(--line);
+  padding:10px 18px
+}
+.stat{display:flex;gap:6px;align-items:baseline}
+.stat strong{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted)}
+.stat .unit{font-size:12px;color:var(--muted)}
+.progress{margin-left:auto;color:var(--muted);font-size:12px}
+main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
+.help{color:var(--muted);font-size:12px;margin:0 0 12px;line-height:1.8}
+.paper{
+  background:var(--paper);border:1px solid var(--line);border-radius:8px;
+  padding:clamp(10px,2.5vw,25px);margin-bottom:28px;
+  box-shadow:0 3px 14px #00000008
+}
+.paper-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:12px
+}
+.paper-name{font-size:13px;color:var(--muted)}
+.paper-meta{font-size:12px;color:var(--muted);text-align:right}
+.grid-scroll{overflow-x:auto;padding:3px}
+.grid{
+  display:grid;grid-template-columns:repeat(25,minmax(24px,1fr));
+  width:100%;min-width:720px;border-top:1px solid var(--line);
+  border-left:1px solid var(--line);user-select:none
+}
+.cell{
+  min-width:0;aspect-ratio:1/1;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  color:var(--text);font-size:clamp(14px,1.6vw,19px);
+  line-height:1;cursor:text
+}
+.cell .char{display:block;max-width:100%;overflow:hidden;white-space:pre}
+.cell .grid-mark{position:absolute;top:2px;right:2px;font-size:9px;font-weight:400;line-height:1;color:var(--muted);opacity:.65;pointer-events:none}
+.cell.selected{background:var(--selected)}
+.cell.current{z-index:2;background:var(--active);outline:2px solid var(--accent);outline-offset:-2px}
+.cell.current .caret{
+  position:absolute;left:3px;top:15%;bottom:15%;width:2px;
+  background:var(--accent);animation:blink 1s step-end infinite;
+  pointer-events:none
+}
+.cell.current.end-caret .caret{left:50%}
+@keyframes blink{50%{opacity:0}}
+.paper-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:var(--muted)
+}
+.active-tag{color:var(--accent)}
+.counter-mark{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.counter-mark span{
+  border:1px solid var(--line);border-radius:4px;padding:2px 6px
+}
+.counter-mark span.done{background:var(--active);border-color:var(--accent);color:var(--text)}
+.empty-note{color:var(--muted);font-size:12px;margin-top:8px}
+.external-panel{display:none;margin-top:16px}
+body.external .external-panel{display:block}
+.external-panel label{display:block;margin-bottom:7px;color:var(--muted)}
+#externalInput{
+  width:100%;min-height:160px;resize:vertical;padding:12px;
+  border:1px solid var(--line);border-radius:7px;
+  background:var(--paper);color:var(--text);font:16px/1.8 inherit
+}
+#imeInput{position:fixed;left:-10000px;top:0;width:2px;height:2px;opacity:.01;border:0;padding:0}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
+@media(max-width:650px){
+  .toolbar{padding:9px;gap:6px}.brand{width:100%}
+  .stats{padding:9px;gap:12px}.stat strong{font-size:17px}
+  .progress{margin-left:0;width:100%}
+  main{padding:0 8px 24px;margin-top:12px}.paper{padding:8px}
+}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span class="brand">文字练习</span>
+  <button id="newPaper" class="primary">＋ 新建纸张</button>
+  <button id="prev">上一张</button>
+  <button id="next">下一张</button>
+  <button id="deletePaper">删除当前纸</button>
+  <button id="externalToggle">外部输入</button>
+  <button id="themeToggle">夜间模式</button>
+  <button id="copyBtn">复制全文</button>
+  <button id="clearBtn">清空当前纸</button>
+  <span class="spacer"></span>
+  <span class="status" id="status">自动保存已开启</span>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <strong id="currentCount">0</strong><small>当前纸</small><span class="unit">字</span>
+  </div>
+  <div class="stat">
+    <strong id="totalCount">0</strong><small>全部纸张</small><span class="unit">字</span>
+  </div>
+  <div class="stat">
+    <strong id="paperCount">1</strong><small>张纸</small>
+  </div>
+  <div class="progress" id="progress">当前纸 0 / 100 字</div>
+</div>
+
+<main>
+  <p class="help">
+    每张纸 20 行，每行 25 格。点击任意格子即可开始输入；空白格也可以定位。
+    字数按非空白字符统计，计数提示每满 100 字增加一格。
+  </p>
+
+  <div id="papers"></div>
+
+  <section class="external-panel">
+    <label for="externalInput">外部输入：支持正常输入、粘贴和修改，并同步到当前纸张。</label>
+    <textarea id="externalInput" placeholder="在这里输入或粘贴文字……"></textarea>
+  </section>
+  <div class="empty-note">正文保存在当前浏览器。清理浏览器网站数据前，请先复制备份。</div>
+</main>
+
+<footer>本地练习工具 · 内容不会主动上传</footer>
+<textarea id="imeInput" aria-label="键盘输入"></textarea>
+
+<script>
+(() => {
+  "use strict";
+
+  const KEY = "essay-paper-practice-v4";
+  const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS;
+
+  const papersEl = document.querySelector("#papers");
+  const ime = document.querySelector("#imeInput");
+  const external = document.querySelector("#externalInput");
+  const status = document.querySelector("#status");
+
+  let papers = [{id:1,text:"",caret:0,selStart:0,selEnd:0}];
+  let activeId = 1;
+  let nextId = 2;
+  let externalMode = false;
+  let dark = false;
+  let composing = false;
+  let dragging = false;
+  let dragAnchor = 0;
+  let saveTimer = null;
+
+  const clamp = (n,min,max) => Math.max(min,Math.min(Number(n)||0,max));
+  const current = () => papers.find(p=>p.id===activeId) || papers[0];
+
+  function effectiveText(s){
+    // 定位产生的纯空白不计入字数。
+    return s.replace(/\s/g,"");
+  }
+  function count(s){return [...effectiveText(s)].length}
+  function pageName(i){return `第 ${i+1} 张纸`}
+
+  function save(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify({
+        papers,activeId,nextId,externalMode,dark
+      }));
+      status.textContent="已保存";
+    }catch(e){status.textContent="保存失败：浏览器存储不可用"}
+  }
+  function scheduleSave(){
+    status.textContent="保存中…";
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(save,160);
+  }
+
+  function load(){
+    try{
+      const d=JSON.parse(localStorage.getItem(KEY)||"{}");
+      if(Array.isArray(d.papers)&&d.papers.length){
+        papers=d.papers.filter(p=>p&&typeof p.text==="string").map((p,i)=>({
+          id:Number(p.id)||i+1,
+          text:p.text,
+          caret:clamp(p.caret||0,0,p.text.length),
+          selStart:clamp(p.selStart||0,0,p.text.length),
+          selEnd:clamp(p.selEnd||0,0,p.text.length)
+        }));
+      }
+      if(!papers.length) papers=[{id:1,text:"",caret:0,selStart:0,selEnd:0}];
+      activeId=papers.some(p=>p.id===d.activeId)?d.activeId:papers[0].id;
+      nextId=Math.max(Number(d.nextId)||1,...papers.map(p=>p.id+1));
+      externalMode=!!d.externalMode;
+      dark=!!d.dark;
+    }catch(e){}
+    document.body.classList.toggle("dark",dark);
+    document.body.classList.toggle("external",externalMode);
+    updateToolbar();
+    syncInput();
+    render();
+  }
+
+  function updateToolbar(){
+    document.querySelector("#themeToggle").textContent=dark?"日间模式":"夜间模式";
+    document.querySelector("#externalToggle").textContent=externalMode?"关闭外部输入":"外部输入";
+    document.querySelector("#prev").disabled=papers.findIndex(p=>p.id===activeId)<=0;
+    document.querySelector("#next").disabled=papers.findIndex(p=>p.id===activeId)>=papers.length-1;
+    document.querySelector("#deletePaper").disabled=papers.length===1;
+  }
+
+  function syncInput(){
+    const p=current();
+    if(ime.value!==p.text) ime.value=p.text;
+    if(external.value!==p.text) external.value=p.text;
+    try{
+      const t=externalMode?external:ime;
+      t.setSelectionRange(Math.min(p.selStart,p.selEnd),Math.max(p.selStart,p.selEnd));
+    }catch(e){}
+  }
+
+  function makePaper(p,index){
+    const section=document.createElement("section");
+    section.className="paper";
+    section.dataset.paperId=String(p.id);
+
+    const head=document.createElement("div");
+    head.className="paper-head";
+    const name=document.createElement("span");
+    name.className="paper-name";
+    name.textContent=pageName(index)+(p.id===activeId?" · 正在编辑":"");
+    if(p.id===activeId) name.classList.add("active-tag");
+
+    const meta=document.createElement("span");
+    meta.className="paper-meta";
+    meta.textContent=`${count(p.text)} 字`;
+    head.append(name,meta);
+
+    const scroll=document.createElement("div");
+    scroll.className="grid-scroll";
+    const grid=document.createElement("div");
+    grid.className="grid";
+    grid.dataset.paperId=String(p.id);
+
+    const fragment=document.createDocumentFragment();
+    const start=p.id===activeId?p.caret:-1;
+    for(let i=0;i<CAPACITY;i++){
+      const cell=document.createElement("div");
+      cell.className="cell";
+      cell.dataset.index=String(i);
+      const ch=p.text[i]||"";
+      if((i+1)%50===0&&!ch){
+        const mark=document.createElement("span");
+        mark.className="grid-mark";
+        mark.textContent=String(i+1);
+        cell.appendChild(mark);
+      }
+      if(ch&&ch!=="\n"&&ch!=="\r"){
+        const span=document.createElement("span");
+        span.className="char";
+        span.textContent=ch;
+        cell.appendChild(span);
+      }
+      if(p.id===activeId&&p.selStart!==p.selEnd&&
+         i>=Math.min(p.selStart,p.selEnd)&&i<Math.max(p.selStart,p.selEnd)){
+        cell.classList.add("selected");
+      }
+      if(p.id===activeId&&i===start){
+        cell.classList.add("current");
+        if(i>=p.text.length||ch===" ")cell.classList.add("end-caret");
+        const caret=document.createElement("span");
+        caret.className="caret";
+        cell.appendChild(caret);
+      }
+      fragment.appendChild(cell);
+    }
+    grid.appendChild(fragment);
+    scroll.appendChild(grid);
+
+    const foot=document.createElement("div");
+    foot.className="paper-footer";
+    const left=document.createElement("span");
+    left.textContent=`${ROWS} 行 × ${COLS} 格`;
+    const marks=document.createElement("div");
+    marks.className="counter-mark";
+    const n=count(p.text);
+    const completed=Math.floor(n/100);
+    for(let i=1;i<=Math.max(1,Math.ceil(n/100));i++){
+      const mark=document.createElement("span");
+      mark.textContent=String(i*100);
+      if(i<=completed)mark.classList.add("done");
+      marks.appendChild(mark);
+    }
+    const right=document.createElement("span");
+    right.textContent=`${n%100} / 100 字`;
+    foot.append(left,marks,right);
+    section.append(head,scroll,foot);
+    return section;
+  }
+
+  function render(){
+    papersEl.replaceChildren();
+    papers.forEach((p,i)=>papersEl.appendChild(makePaper(p,i)));
+    const p=current();
+    const total=papers.reduce((sum,item)=>sum+count(item.text),0);
+    document.querySelector("#currentCount").textContent=count(p.text);
+    document.querySelector("#totalCount").textContent=total;
+    document.querySelector("#paperCount").textContent=papers.length;
+    document.querySelector("#progress").textContent=
+      `当前纸 ${count(p.text)%100} / 100 字 · ${pageName(papers.findIndex(x=>x.id===activeId))}`;
+    updateToolbar();
+  }
+
+  function focusInput(){
+    const target=externalMode?external:ime;
+    target.focus({preventScroll:true});
+    const p=current();
+    try{target.setSelectionRange(Math.min(p.selStart,p.selEnd),Math.max(p.selStart,p.selEnd))}catch(e){}
+  }
+
+  function ensurePosition(p,index){
+    if(index>p.text.length)p.text+=" ".repeat(index-p.text.length);
+  }
+
+  function placeCaret(p,index,extend=false){
+    index=clamp(index,0,CAPACITY-1);
+    ensurePosition(p,index);
+    p.caret=index;
+    if(extend){
+      p.selStart=Math.min(dragAnchor,index);
+      p.selEnd=Math.max(dragAnchor,index);
+    }else{
+      p.selStart=p.selEnd=index;
+    }
+    activeId=p.id;
+    syncInput();
+    render();
+    focusInput();
+    scheduleSave();
+  }
+
+  papersEl.addEventListener("pointerdown",e=>{
+    const cell=e.target.closest(".cell");
+    if(!cell)return;
+    e.preventDefault();
+    const p=papers.find(x=>x.id===Number(cell.closest(".grid").dataset.paperId));
+    if(!p)return;
+    activeId=p.id;
+    dragAnchor=Number(cell.dataset.index);
+    dragging=true;
+    placeCaret(p,dragAnchor);
+  });
+
+  document.addEventListener("pointermove",e=>{
+    if(!dragging||!(e.buttons&1))return;
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    const cell=el&&el.closest?el.closest(".cell"):null;
+    if(!cell)return;
+    const paperEl=cell.closest(".paper");
+    const p=papers.find(x=>x.id===Number(paperEl.dataset.paperId));
+    if(!p||p.id!==activeId)return;
+    const index=Number(cell.dataset.index);
+    ensurePosition(p,index);
+    p.caret=index;
+    p.selStart=Math.min(dragAnchor,index);
+    p.selEnd=Math.max(dragAnchor,index);
+    syncInput();
+    render();
+  });
+
+  document.addEventListener("pointerup",()=>{
+    if(!dragging)return;
+    dragging=false;
+    focusInput();
+    scheduleSave();
+  });
+
+  function applyInput(target){
+    const p=current();
+    p.text=target.value;
+    p.caret=target.selectionStart??p.text.length;
+    p.selStart=target.selectionStart??p.caret;
+    p.selEnd=target.selectionEnd??p.caret;
+    syncInput();
+    render();
+    scheduleSave();
+  }
+
+  ime.addEventListener("compositionstart",()=>composing=true);
+  ime.addEventListener("compositionend",()=>{composing=false;applyInput(ime)});
+  ime.addEventListener("input",()=>{if(!composing)applyInput(ime)});
+  external.addEventListener("input",()=>applyInput(external));
+
+  function readSelection(target){
+    const p=current();
+    p.caret=target.selectionEnd??p.caret;
+    p.selStart=target.selectionStart??p.caret;
+    p.selEnd=target.selectionEnd??p.caret;
+    render();
+    scheduleSave();
+  }
+  for(const t of [ime,external]){
+    t.addEventListener("keyup",()=>{if(!composing)readSelection(t)});
+    t.addEventListener("click",()=>readSelection(t));
+    t.addEventListener("select",()=>{if(document.activeElement===t)readSelection(t)});
+  }
+
+  function activatePaper(id,focus=true){
+    activeId=id;
+    syncInput();
+    render();
+    save();
+    if(focus)focusInput();
+  }
+
+  document.querySelector("#newPaper").addEventListener("click",()=>{
+    const p={id:nextId++,text:"",caret:0,selStart:0,selEnd:0};
+    papers.push(p);
+    activatePaper(p.id);
+    document.querySelector(`[data-paper-id="${p.id}"]`)?.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+
+  function movePaper(delta){
+    const i=papers.findIndex(p=>p.id===activeId);
+    const target=papers[clamp(i+delta,0,papers.length-1)];
+    activatePaper(target.id);
+    document.querySelector(`[data-paper-id="${target.id}"]`)?.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  document.querySelector("#prev").addEventListener("click",()=>movePaper(-1));
+  document.querySelector("#next").addEventListener("click",()=>movePaper(1));
+
+  document.querySelector("#deletePaper").addEventListener("click",()=>{
+    if(papers.length<=1)return;
+    if(!confirm("确定删除当前纸张及其全部内容？此操作无法撤销。"))return;
+    const i=papers.findIndex(p=>p.id===activeId);
+    papers.splice(i,1);
+    activeId=papers[Math.max(0,i-1)].id;
+    syncInput();
+    render();
+    save();
+  });
+
+  document.querySelector("#clearBtn").addEventListener("click",()=>{
+    if(!confirm("确定清空当前纸张的正文？"))return;
+    const p=current();
+    p.text="";
+    p.caret=p.selStart=p.selEnd=0;
+    syncInput();
+    render();
+    save();
+    focusInput();
+  });
+
+  document.querySelector("#copyBtn").addEventListener("click",async()=>{
+    const all=papers.map((p,i)=>`【${pageName(i)}】\n${p.text.replace(/\s+$/,"")}`).join("\n\n");
+    try{
+      await navigator.clipboard.writeText(all);
+      status.textContent="全文已复制";
+    }catch(e){
+      const temp=document.createElement("textarea");
+      temp.value=all;
+      document.body.appendChild(temp);
+      temp.select();
+      const ok=document.execCommand("copy");
+      temp.remove();
+      status.textContent=ok?"全文已复制":"复制失败，请手动复制";
+    }
+  });
+
+  document.querySelector("#themeToggle").addEventListener("click",()=>{
+    dark=!dark;
+    document.body.classList.toggle("dark",dark);
+    updateToolbar();
+    save();
+  });
+
+  document.querySelector("#externalToggle").addEventListener("click",()=>{
+    externalMode=!externalMode;
+    document.body.classList.toggle("external",externalMode);
+    updateToolbar();
+    syncInput();
+    render();
+    focusInput();
+    save();
+  });
+
+  document.addEventListener("keydown",e=>{
+    if(e.ctrlKey&&e.key.toLowerCase()==="s"){
+      e.preventDefault();save();
+    }
+    if(e.key==="Escape"){
+      const p=current();
+      p.selStart=p.selEnd=p.caret;
+      render();
+    }
+  });
+  window.addEventListener("beforeunload",save);
+
+  load();
+})();
+</script>
+</body>
+</html>
