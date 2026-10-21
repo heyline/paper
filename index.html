@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paper</title>
+<title>Paper - 申论稿纸练习</title>
 <style>
 :root{
   --bg:#f0efeb;--paper:#fffefa;--text:#34342f;--muted:#85857e;
@@ -17,44 +17,82 @@ body.dark{
   --selected:#354d68;--panel:#292a2d;--btn:#37383c;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-  font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif}
+html{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif;
+}
 button,select{
   font:inherit;color:var(--text);background:var(--btn);
   border:1px solid var(--line);border-radius:6px;padding:7px 11px;
-  cursor:pointer
+  cursor:pointer;
 }
 button:hover,select:hover{border-color:var(--accent)}
 button:disabled{opacity:.4;cursor:not-allowed}
 button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+
+/* 顶部工具栏 */
 .toolbar{
-  position:sticky;top:0;z-index:10;display:flex;align-items:center;
-  gap:8px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);
-  border-bottom:1px solid var(--line)
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:5px 12px;background:var(--panel);
+  border-bottom:1px solid var(--line);
 }
-.brand{font-weight:600;font-size:15px;margin-right:5px}
-.spacer{flex:1}
-.status{color:var(--muted);font-size:12px}
+.toolbar-actions{
+  display:flex;align-items:center;gap:7px;flex:1;min-width:0;flex-wrap:wrap;
+}
+.toolbar-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.toolbar button{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  white-space:nowrap;padding:5px 8px;
+}
+.toolbar button svg{width:14px;height:14px;flex-shrink:0}
+.toolbar button .button-label{display:inline}
+.brand{font-weight:600;font-size:15px}
+.status{color:var(--muted);font-size:11px;white-space:nowrap}
+.theme-button{order:0;flex-shrink:0}
+.theme-button svg{width:15px!important;height:15px!important}
+#newPaper{margin-left:auto;flex-shrink:0}
+@media(max-width:800px){
+  .toolbar{padding:5px 8px;gap:6px}
+  .toolbar-actions{gap:5px}
+  .toolbar-group{gap:4px}
+  .toolbar .status{width:auto;margin-right:0;order:0}
+}
+@media(max-width:480px){
+  .toolbar button{padding:5px 6px;gap:4px}
+  .toolbar button .button-label{font-size:12px}
+  .toolbar-actions{flex-basis:calc(100% - 34px)}
+  #newPaper{margin-left:auto}
+}
+
+/* 统计栏 */
 .stats{
   display:flex;gap:18px;align-items:center;flex-wrap:wrap;
   background:var(--panel);border-bottom:1px solid var(--line);
-  padding:10px 18px
+  padding:10px 18px;
 }
 .stat{display:flex;gap:6px;align-items:baseline}
-.stat strong{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat strong{
+  font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;
+}
 .stat small{color:var(--muted)}
 .stat .unit{font-size:12px;color:var(--muted)}
 .progress{margin-left:auto;color:var(--muted);font-size:12px}
+
+/* 主区域 */
 main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
 .help{color:var(--muted);font-size:12px;margin:0 0 12px;line-height:1.8}
+.workspace{display:block}
+.papers-pane{min-width:0}
 .paper{
   background:var(--paper);border:1px solid var(--line);border-radius:8px;
   padding:clamp(10px,2.5vw,25px);margin-bottom:28px;
-  box-shadow:0 3px 14px #00000008
+  box-shadow:0 3px 14px #00000008;
 }
 .paper-head{
   display:flex;align-items:center;justify-content:space-between;
-  gap:12px;margin-bottom:12px
+  gap:12px;margin-bottom:12px;
 }
 .paper-name{font-size:13px;color:var(--muted)}
 .paper-meta{font-size:12px;color:var(--muted);text-align:right}
@@ -62,95 +100,176 @@ main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
 .grid{
   display:grid;grid-template-columns:repeat(25,minmax(24px,1fr));
   width:100%;min-width:720px;border-top:1px solid var(--line);
-  border-left:1px solid var(--line);user-select:none
+  border-left:1px solid var(--line);user-select:none;
 }
 .cell{
   min-width:0;aspect-ratio:1/1;position:relative;
   display:flex;align-items:center;justify-content:center;
   border-right:1px solid var(--line);border-bottom:1px solid var(--line);
   color:var(--text);font-size:clamp(14px,1.6vw,19px);
-  line-height:1;cursor:text
+  line-height:1;cursor:text;
 }
 .cell .char{display:block;max-width:100%;overflow:hidden;white-space:pre}
-.cell .grid-mark{position:absolute;top:2px;right:2px;font-size:9px;font-weight:400;line-height:1;color:var(--muted);opacity:.65;pointer-events:none}
+.cell .grid-mark{
+  position:absolute;top:2px;right:2px;font-size:9px;font-weight:400;
+  line-height:1;color:var(--muted);opacity:.65;pointer-events:none;
+}
 .cell.selected{background:var(--selected)}
-.cell.current{z-index:2;background:var(--active);outline:2px solid var(--accent);outline-offset:-2px}
+.cell.current{
+  z-index:2;background:var(--active);
+  outline:2px solid var(--accent);outline-offset:-2px;
+}
 .cell.current .caret{
   position:absolute;left:3px;top:15%;bottom:15%;width:2px;
   background:var(--accent);animation:blink 1s step-end infinite;
-  pointer-events:none
+  pointer-events:none;
 }
 .cell.current.end-caret .caret{left:50%}
 @keyframes blink{50%{opacity:0}}
 .paper-footer{
   display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:var(--muted)
+  flex-wrap:wrap;gap:8px;margin-top:12px;
+  font-size:12px;color:var(--muted);
 }
 .active-tag{color:var(--accent)}
 .counter-mark{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .counter-mark span{
-  border:1px solid var(--line);border-radius:4px;padding:2px 6px
+  border:1px solid var(--line);border-radius:4px;padding:2px 6px;
 }
-.counter-mark span.done{background:var(--active);border-color:var(--accent);color:var(--text)}
+.counter-mark span.done{
+  background:var(--active);border-color:var(--accent);color:var(--text);
+}
 .empty-note{color:var(--muted);font-size:12px;margin-top:8px}
-.external-panel{display:none;margin-top:16px}
-body.external .external-panel{display:block}
+
+/* 外部输入区 */
+.external-panel{display:none;min-width:0}
+body.external .external-panel{display:flex;flex-direction:column}
 .external-panel label{display:block;margin-bottom:7px;color:var(--muted)}
 #externalInput{
-  width:100%;min-height:160px;resize:vertical;padding:12px;
-  border:1px solid var(--line);border-radius:7px;
-  background:var(--paper);color:var(--text);font:16px/1.8 inherit
+  display:block;width:100%;min-height:160px;resize:vertical;
+  padding:12px;border:1px solid var(--line);border-radius:7px;
+  background:var(--paper);color:var(--text);
+  font:16px/1.8 "Microsoft YaHei","PingFang SC",sans-serif;
+  outline:none;
 }
-#imeInput{position:fixed;left:-10000px;top:0;width:2px;height:2px;opacity:.01;border:0;padding:0}
+#externalInput:focus{border-color:var(--accent)}
+#imeInput{
+  position:fixed;left:-10000px;top:0;width:2px;height:2px;
+  opacity:.01;border:0;padding:0;
+}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
-@media(max-width:650px){
-  .toolbar{padding:9px;gap:6px}.brand{width:100%}
-  .stats{padding:9px;gap:12px}.stat strong{font-size:17px}
+
+/* 外部输入模式 layout */
+body.external{height:100%;overflow:hidden}
+body.external main{
+  max-width:none;height:calc(100dvh - var(--chrome-height,112px));
+  margin:0;padding:12px 16px;display:flex;flex-direction:column;overflow:hidden;
+}
+body.external .help{flex:0 0 auto}
+body.external .workspace{
+  flex:1;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(360px,42%);
+  gap:16px;align-items:stretch;
+}
+body.external .papers-pane{
+  min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;scrollbar-gutter:stable;padding:2px 4px 20px 0;
+}
+body.external .paper{margin-bottom:16px}
+body.external .external-panel{
+  position:relative;height:100%;min-width:0;min-height:0;overflow:hidden;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:12px;
+}
+body.external .external-panel label{flex:0 0 auto}
+body.external #externalInput{
+  flex:1;height:0;min-height:0;resize:none;font-size:16px;line-height:1.9;
+}
+body.external .empty-note,body.external footer{display:none}
+@media(min-width:801px) and (max-width:1100px){
+  body.external .workspace{
+    grid-template-columns:minmax(0,1fr) minmax(320px,42%);gap:12px;
+  }
+  body.external main{padding:10px}
+}
+@media(max-width:800px){
+  .toolbar{padding:5px 8px;gap:6px}
+  .stats{padding:9px;gap:12px}
+  .stat strong{font-size:17px}
   .progress{margin-left:0;width:100%}
-  main{padding:0 8px 24px;margin-top:12px}.paper{padding:8px}
+  main{padding:0 8px 24px;margin-top:12px}
+  .paper{padding:8px}
+  body.external{height:auto;min-height:100%;overflow:auto}
+  body.external main{
+    height:auto;min-height:calc(100dvh - 112px);
+    overflow:visible;padding:10px 8px 20px;
+  }
+  body.external .workspace{
+    display:flex;flex-direction:column;gap:12px;overflow:visible;
+  }
+  body.external .papers-pane{overflow:visible;padding:0}
+  body.external .external-panel{
+    position:sticky;bottom:0;z-index:10;height:42dvh;min-height:220px;
+    flex:0 0 42dvh;background:var(--panel);
+    box-shadow:0 -4px 12px #00000010;
+  }
+  body.external #externalInput{flex:1;height:auto}
 }
 </style>
 </head>
 <body>
 <div class="toolbar">
-  <span class="brand">文字练习</span>
-  <button id="newPaper" class="primary">＋ 新建纸张</button>
-  <button id="prev">上一张</button>
-  <button id="next">下一张</button>
-  <button id="deletePaper">删除当前纸</button>
-  <button id="externalToggle">外部输入</button>
-  <button id="themeToggle">夜间模式</button>
-  <button id="copyBtn">复制全文</button>
-  <button id="clearBtn">清空当前纸</button>
-  <span class="spacer"></span>
-  <span class="status" id="status">自动保存已开启</span>
+  <button id="themeToggle" class="theme-button" title="切换到夜间模式" aria-label="切换到夜间模式">
+    <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3-1.42-1.42"/>
+    </svg>
+  </button>
+  <div class="toolbar-actions">
+    <div class="toolbar-group">
+      <button id="externalToggle" title="打开或关闭外部输入">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+        <span class="button-label">外部输入</span>
+      </button>
+      <button id="copyBtn" title="复制全部稿纸内容">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+        <span class="button-label">复制全文</span>
+      </button>
+      <button id="clearBtn" title="清空当前纸张">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>
+        <span class="button-label">清空当前纸</span>
+      </button>
+      <button id="deletePaper" title="删除当前纸张">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>
+        <span class="button-label">删除当前纸</span>
+      </button>
+    </div>
+    <span class="status" id="status">自动保存已开启</span>
+  </div>
+  <button id="newPaper" class="primary" title="新建一张稿纸">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    <span class="button-label">新建纸张</span>
+  </button>
 </div>
 
 <div class="stats">
-  <div class="stat">
-    <strong id="currentCount">0</strong><small>当前纸</small><span class="unit">字</span>
-  </div>
-  <div class="stat">
-    <strong id="totalCount">0</strong><small>全部纸张</small><span class="unit">字</span>
-  </div>
-  <div class="stat">
-    <strong id="paperCount">1</strong><small>张纸</small>
-  </div>
+  <div class="stat"><strong id="currentCount">0</strong><small>当前纸</small><span class="unit">字</span></div>
+  <div class="stat"><strong id="totalCount">0</strong><small>全部纸张</small><span class="unit">字</span></div>
+  <div class="stat"><strong id="paperCount">1</strong><small>张纸</small></div>
   <div class="progress" id="progress">当前纸 0 / 100 字</div>
 </div>
 
 <main>
   <p class="help">
-    每张纸 20 行，每行 25 格。点击任意格子即可开始输入；空白格也可以定位。
-    字数按非空白字符统计，计数提示每满 100 字增加一格。
+    每张纸 20 行，每行 25 格（共 500 格）。外部输入支持换行另起一行，超出容量自动分配新纸张。
   </p>
-
-  <div id="papers"></div>
-
-  <section class="external-panel">
-    <label for="externalInput">外部输入：支持正常输入、粘贴和修改，并同步到当前纸张。</label>
-    <textarea id="externalInput" placeholder="在这里输入或粘贴文字……"></textarea>
-  </section>
+  <div class="workspace">
+    <div class="papers-pane"><div id="papers"></div></div>
+    <section class="external-panel">
+      <label for="externalInput">外部输入：保留回车换行，自动按 25 字/行排版并填充稿纸。</label>
+      <textarea id="externalInput" placeholder="在这里输入或粘贴文字……"></textarea>
+    </section>
+  </div>
   <div class="empty-note">正文保存在当前浏览器。清理浏览器网站数据前，请先复制备份。</div>
 </main>
 
@@ -162,13 +281,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
   "use strict";
 
   const KEY = "essay-paper-practice-v4";
-  const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS;
-
+  const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS; // 500 格
   const papersEl = document.querySelector("#papers");
+  const papersPane = document.querySelector(".papers-pane");
   const ime = document.querySelector("#imeInput");
   const external = document.querySelector("#externalInput");
   const status = document.querySelector("#status");
 
+  let rawText = ""; // 保存带 \n 换行符的原始文本
   let papers = [{id:1,text:"",caret:0,selStart:0,selEnd:0}];
   let activeId = 1;
   let nextId = 2;
@@ -179,71 +299,193 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
   let dragAnchor = 0;
   let saveTimer = null;
 
+  // 网格与原文坐标映射表
+  let gridToRawMap = [];
+  let rawToGridMap = [];
+
   const clamp = (n,min,max) => Math.max(min,Math.min(Number(n)||0,max));
   const current = () => papers.find(p=>p.id===activeId) || papers[0];
-
-  function effectiveText(s){
-    // 定位产生的纯空白不计入字数。
-    return s.replace(/\s/g,"");
-  }
+  function effectiveText(s){return s.replace(/\s/g,"")}
   function count(s){return [...effectiveText(s)].length}
   function pageName(i){return `第 ${i+1} 张纸`}
+
+  // 构建网格坐标与带 \n 原文的映射
+  function buildGridFromRawText(text) {
+    gridToRawMap = [];
+    rawToGridMap = [];
+    const gridChars = [];
+    let gridPos = 0;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      rawToGridMap[i] = gridPos;
+
+      if (ch === '\n') {
+        const remainder = gridPos % COLS;
+        const spacesToAdd = (remainder === 0) ? COLS : (COLS - remainder);
+        for (let s = 0; s < spacesToAdd; s++) {
+          gridChars[gridPos] = " ";
+          gridToRawMap[gridPos] = i;
+          gridPos++;
+        }
+      } else if (ch === '\r') {
+        // 忽略 \r
+      } else {
+        gridChars[gridPos] = ch;
+        gridToRawMap[gridPos] = i;
+        gridPos++;
+      }
+    }
+
+    const pageCount = Math.max(1, Math.ceil(gridChars.length / CAPACITY) || 1);
+    const paperList = [];
+
+    for (let p = 0; p < pageCount; p++) {
+      let pageStr = "";
+      for (let c = 0; c < CAPACITY; c++) {
+        const idx = p * CAPACITY + c;
+        pageStr += gridChars[idx] || "";
+      }
+      paperList.push(pageStr);
+    }
+
+    return { paperList, gridChars };
+  }
 
   function save(){
     try{
       localStorage.setItem(KEY,JSON.stringify({
-        papers,activeId,nextId,externalMode,dark
+        rawText,activeId,nextId,externalMode,dark
       }));
       status.textContent="已保存";
-    }catch(e){status.textContent="保存失败：浏览器存储不可用"}
+    }catch(e){
+      status.textContent="保存失败：浏览器存储不可用";
+    }
   }
+
   function scheduleSave(){
     status.textContent="保存中…";
     clearTimeout(saveTimer);
     saveTimer=setTimeout(save,160);
   }
 
+  // 根据原文更新稿纸排版
+  function updateFromRawText(newRawText, sourceElement = null, rawCaret = null) {
+    rawText = newRawText;
+    const { paperList } = buildGridFromRawText(rawText);
+
+    // 动态增删纸张
+    const needed = paperList.length;
+    while (papers.length < needed) {
+      papers.push({ id: nextId++, text: "", caret: 0, selStart: 0, selEnd: 0 });
+    }
+    while (papers.length > needed && papers.length > 1) {
+      papers.pop();
+    }
+
+    for (let i = 0; i < papers.length; i++) {
+      papers[i].text = paperList[i] || "";
+    }
+
+    // 更新光标与活动纸张
+    if (rawCaret !== null) {
+      let targetGridIdx = rawToGridMap[rawCaret];
+      if (targetGridIdx === undefined) {
+        targetGridIdx = rawToGridMap[rawText.length - 1] !== undefined
+          ? rawToGridMap[rawText.length - 1] + 1
+          : 0;
+      }
+
+      let activeIdx = Math.min(papers.length - 1, Math.floor(targetGridIdx / CAPACITY));
+      activeId = papers[activeIdx].id;
+      let localCaret = targetGridIdx - activeIdx * CAPACITY;
+      let p = papers[activeIdx];
+      p.caret = localCaret;
+      p.selStart = localCaret;
+      p.selEnd = localCaret;
+    } else {
+      if (!papers.some(p => p.id === activeId)) {
+        activeId = papers[papers.length - 1].id;
+      }
+    }
+
+    syncInput(sourceElement, rawCaret);
+    render();
+    scheduleSave();
+  }
+
   function load(){
     try{
       const d=JSON.parse(localStorage.getItem(KEY)||"{}");
-      if(Array.isArray(d.papers)&&d.papers.length){
-        papers=d.papers.filter(p=>p&&typeof p.text==="string").map((p,i)=>({
-          id:Number(p.id)||i+1,
-          text:p.text,
-          caret:clamp(p.caret||0,0,p.text.length),
-          selStart:clamp(p.selStart||0,0,p.text.length),
-          selEnd:clamp(p.selEnd||0,0,p.text.length)
-        }));
+      if (typeof d.rawText === "string") {
+        rawText = d.rawText;
+      } else if (Array.isArray(d.papers) && d.papers.length) {
+        rawText = d.papers.map(p => p.text || "").join("");
+      } else {
+        rawText = "";
       }
-      if(!papers.length) papers=[{id:1,text:"",caret:0,selStart:0,selEnd:0}];
-      activeId=papers.some(p=>p.id===d.activeId)?d.activeId:papers[0].id;
-      nextId=Math.max(Number(d.nextId)||1,...papers.map(p=>p.id+1));
-      externalMode=!!d.externalMode;
-      dark=!!d.dark;
+      activeId = Number(d.activeId) || 1;
+      nextId = Number(d.nextId) || 2;
+      externalMode = !!d.externalMode;
+      dark = !!d.dark;
     }catch(e){}
+
     document.body.classList.toggle("dark",dark);
     document.body.classList.toggle("external",externalMode);
     updateToolbar();
-    syncInput();
-    render();
+    updateFromRawText(rawText);
+    updateChromeHeight();
+  }
+
+  function updateChromeHeight(){
+    const toolbar=document.querySelector(".toolbar");
+    const stats=document.querySelector(".stats");
+    const height=(toolbar?.offsetHeight||0)+(stats?.offsetHeight||0);
+    document.documentElement.style.setProperty("--chrome-height",`${height}px`);
   }
 
   function updateToolbar(){
-    document.querySelector("#themeToggle").textContent=dark?"日间模式":"夜间模式";
-    document.querySelector("#externalToggle").textContent=externalMode?"关闭外部输入":"外部输入";
-    document.querySelector("#prev").disabled=papers.findIndex(p=>p.id===activeId)<=0;
-    document.querySelector("#next").disabled=papers.findIndex(p=>p.id===activeId)>=papers.length-1;
+    const themeButton=document.querySelector("#themeToggle");
+    const themeIcon=document.querySelector("#themeIcon");
+    themeButton.title=dark?"切换到日间模式":"切换到夜间模式";
+    themeButton.setAttribute("aria-label",themeButton.title);
+    themeIcon.innerHTML=dark
+      ?'<path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.6 8.6 0 1 0 20.5 14.2Z"/>'
+      :'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3-1.42-1.42"/>';
+    document.querySelector("#externalToggle .button-label").textContent=
+      externalMode?"关闭外部输入":"外部输入";
     document.querySelector("#deletePaper").disabled=papers.length===1;
   }
 
-  function syncInput(){
-    const p=current();
-    if(ime.value!==p.text) ime.value=p.text;
-    if(external.value!==p.text) external.value=p.text;
-    try{
-      const t=externalMode?external:ime;
-      t.setSelectionRange(Math.min(p.selStart,p.selEnd),Math.max(p.selStart,p.selEnd));
-    }catch(e){}
+  // 精准同步各文本框，避免操作项乱跳
+  function syncInput(skipTarget = null, rawCaret = null){
+    const p = current();
+
+    if (skipTarget !== external && external.value !== rawText) {
+      external.value = rawText;
+    }
+    if (skipTarget !== ime && ime.value !== p.text) {
+      ime.value = p.text;
+    }
+
+    try {
+      if (skipTarget !== external) {
+        let pos = rawCaret;
+        if (pos === null) {
+          const activeIdx = papers.findIndex(x => x.id === activeId);
+          const gridIdx = activeIdx * CAPACITY + p.caret;
+          pos = gridToRawMap[gridIdx] ?? rawText.length;
+        }
+        external.setSelectionRange(pos, pos);
+      }
+
+      if (skipTarget !== ime) {
+        ime.setSelectionRange(
+          Math.min(p.selStart, p.selEnd),
+          Math.max(p.selStart, p.selEnd)
+        );
+      }
+    } catch (e) {}
   }
 
   function makePaper(p,index){
@@ -256,7 +498,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
     const name=document.createElement("span");
     name.className="paper-name";
     name.textContent=pageName(index)+(p.id===activeId?" · 正在编辑":"");
-    if(p.id===activeId) name.classList.add("active-tag");
+    if(p.id===activeId)name.classList.add("active-tag");
 
     const meta=document.createElement("span");
     meta.className="paper-meta";
@@ -268,14 +510,15 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
     const grid=document.createElement("div");
     grid.className="grid";
     grid.dataset.paperId=String(p.id);
-
     const fragment=document.createDocumentFragment();
     const start=p.id===activeId?p.caret:-1;
+
     for(let i=0;i<CAPACITY;i++){
       const cell=document.createElement("div");
       cell.className="cell";
       cell.dataset.index=String(i);
       const ch=p.text[i]||"";
+
       if((i+1)%50===0&&!ch){
         const mark=document.createElement("span");
         mark.className="grid-mark";
@@ -288,8 +531,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
         span.textContent=ch;
         cell.appendChild(span);
       }
-      if(p.id===activeId&&p.selStart!==p.selEnd&&
-         i>=Math.min(p.selStart,p.selEnd)&&i<Math.max(p.selStart,p.selEnd)){
+      if(
+        p.id===activeId &&
+        p.selStart!==p.selEnd &&
+        i>=Math.min(p.selStart,p.selEnd) &&
+        i<Math.max(p.selStart,p.selEnd)
+      ){
         cell.classList.add("selected");
       }
       if(p.id===activeId&&i===start){
@@ -301,9 +548,9 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
       }
       fragment.appendChild(cell);
     }
+
     grid.appendChild(fragment);
     scroll.appendChild(grid);
-
     const foot=document.createElement("div");
     foot.className="paper-footer";
     const left=document.createElement("span");
@@ -312,12 +559,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
     marks.className="counter-mark";
     const n=count(p.text);
     const completed=Math.floor(n/100);
+
     for(let i=1;i<=Math.max(1,Math.ceil(n/100));i++){
       const mark=document.createElement("span");
       mark.textContent=String(i*100);
       if(i<=completed)mark.classList.add("done");
       marks.appendChild(mark);
     }
+
     const right=document.createElement("span");
     right.textContent=`${n%100} / 100 字`;
     foot.append(left,marks,right);
@@ -326,30 +575,35 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
   }
 
   function render(){
+    // 保护左侧面板滚动位置，打字时绝对不乱跳/不移动
+    const prevScrollTop = papersPane ? papersPane.scrollTop : 0;
     papersEl.replaceChildren();
     papers.forEach((p,i)=>papersEl.appendChild(makePaper(p,i)));
+    if (papersPane) papersPane.scrollTop = prevScrollTop;
+
     const p=current();
-    const total=papers.reduce((sum,item)=>sum+count(item.text),0);
+    const total=count(rawText);
     document.querySelector("#currentCount").textContent=count(p.text);
     document.querySelector("#totalCount").textContent=total;
     document.querySelector("#paperCount").textContent=papers.length;
     document.querySelector("#progress").textContent=
       `当前纸 ${count(p.text)%100} / 100 字 · ${pageName(papers.findIndex(x=>x.id===activeId))}`;
     updateToolbar();
+    updateChromeHeight();
   }
 
   function focusInput(){
     const target=externalMode?external:ime;
-    target.focus({preventScroll:true});
-    const p=current();
-    try{target.setSelectionRange(Math.min(p.selStart,p.selEnd),Math.max(p.selStart,p.selEnd))}catch(e){}
+    try{
+      target.focus({preventScroll:true});
+    }catch(e){}
   }
 
   function ensurePosition(p,index){
     if(index>p.text.length)p.text+=" ".repeat(index-p.text.length);
   }
 
-  function placeCaret(p,index,extend=false){
+  function placeCaret(p,index,extend=false,rawCaret=null){
     index=clamp(index,0,CAPACITY-1);
     ensurePosition(p,index);
     p.caret=index;
@@ -360,7 +614,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
       p.selStart=p.selEnd=index;
     }
     activeId=p.id;
-    syncInput();
+    syncInput(null, rawCaret);
     render();
     focusInput();
     scheduleSave();
@@ -373,9 +627,17 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
     const p=papers.find(x=>x.id===Number(cell.closest(".grid").dataset.paperId));
     if(!p)return;
     activeId=p.id;
-    dragAnchor=Number(cell.dataset.index);
+    const index=Number(cell.dataset.index);
+    dragAnchor=index;
     dragging=true;
-    placeCaret(p,dragAnchor);
+
+    const activeIdx = papers.findIndex(x => x.id === activeId);
+    const gridIdx = activeIdx * CAPACITY + index;
+    let rawPos = gridToRawMap[gridIdx];
+    if (rawPos === undefined) {
+      rawPos = rawText.length;
+    }
+    placeCaret(p, index, false, rawPos);
   });
 
   document.addEventListener("pointermove",e=>{
@@ -403,33 +665,131 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
   });
 
   function applyInput(target){
-    const p=current();
-    p.text=target.value;
-    p.caret=target.selectionStart??p.text.length;
-    p.selStart=target.selectionStart??p.caret;
-    p.selEnd=target.selectionEnd??p.caret;
-    syncInput();
-    render();
-    scheduleSave();
+    if (target === external) {
+      const caret = external.selectionEnd ?? external.value.length;
+      updateFromRawText(external.value, external, caret);
+    } else {
+      // 仅在隐藏框 (ime) 进行网格打字处理
+      const p = current();
+      const activeIdx = papers.findIndex(x => x.id === activeId);
+
+      const newText = ime.value;
+      const oldText = p.text;
+
+      let start = 0;
+      while (start < oldText.length && start < newText.length && oldText[start] === newText[start]) {
+        start++;
+      }
+      let oldEnd = oldText.length;
+      let newEnd = newText.length;
+      while (oldEnd > start && newEnd > start && oldText[oldEnd - 1] === newEnd[newEnd - 1]) {
+        oldEnd--;
+        newEnd--;
+      }
+
+      const added = newText.slice(start, newEnd);
+      const removedLen = oldEnd - start;
+
+      let rawStart = gridToRawMap[activeIdx * CAPACITY + start];
+      if (rawStart === undefined) rawStart = rawText.length;
+
+      rawText = rawText.slice(0, rawStart) + added + rawText.slice(rawStart + removedLen);
+      let newRawCaret = rawStart + added.length;
+
+      updateFromRawText(rawText, ime, newRawCaret);
+    }
   }
 
-  ime.addEventListener("compositionstart",()=>composing=true);
-  ime.addEventListener("compositionend",()=>{composing=false;applyInput(ime)});
-  ime.addEventListener("input",()=>{if(!composing)applyInput(ime)});
-  external.addEventListener("input",()=>applyInput(external));
+  document.addEventListener("pointerdown",e=>{
+    if(e.target.closest("button, input, textarea, select, a, [contenteditable=\"true\"]"))return;
+    if(e.target.closest(".cell"))return;
+    e.preventDefault();
+    setTimeout(()=>focusInput(),0);
+  });
+
+  // 仅对极小隐藏输入框进行退格兼容拦截，绝对不影响外部输入框的原生 Backspace 功能
+  ime.addEventListener("keydown",e=>{
+    if(e.key!=="Backspace"||composing||e.ctrlKey||e.metaKey||e.altKey)return;
+    const start=ime.selectionStart??0;
+    const end=ime.selectionEnd??start;
+    if(start!==end||start<=0)return;
+    const p=current();
+    const text=p.text;
+    const lastVisible=text.search(/\s*$/);
+    const lastNonSpace=lastVisible-1;
+    if(start>lastNonSpace+1&&/^\s*$/.test(text.slice(lastNonSpace+1,start))){
+      e.preventDefault();
+      if(lastNonSpace<0)return;
+      p.text=text.slice(0,lastNonSpace)+text.slice(lastNonSpace+1);
+      p.caret=lastNonSpace;
+      p.selStart=p.selEnd=lastNonSpace;
+      syncInput(ime);
+      render();
+      focusInput();
+      scheduleSave();
+    }
+  });
+
+  // IME 拼音输入支持
+  for(const target of [ime, external]){
+    target.addEventListener("compositionstart", () => composing = true);
+    target.addEventListener("compositionend", () => {
+      composing = false;
+      applyInput(target);
+    });
+    target.addEventListener("input", () => {
+      if(!composing) applyInput(target);
+    });
+  }
 
   function readSelection(target){
-    const p=current();
-    p.caret=target.selectionEnd??p.caret;
-    p.selStart=target.selectionStart??p.caret;
-    p.selEnd=target.selectionEnd??p.caret;
-    render();
-    scheduleSave();
+    if(composing) return;
+    if (target === external) {
+      const caret = external.selectionEnd ?? 0;
+      let targetGridIdx = rawToGridMap[caret] ?? gridToRawMap.length;
+      let activeIdx = Math.min(papers.length - 1, Math.floor(targetGridIdx / CAPACITY));
+      activeId = papers[activeIdx].id;
+      let p = papers[activeIdx];
+      let localCaret = targetGridIdx - activeIdx * CAPACITY;
+      p.caret = localCaret;
+      p.selStart = localCaret;
+      p.selEnd = localCaret;
+      render();
+      scheduleSave();
+    } else {
+      const p = current();
+      p.caret = target.selectionEnd ?? p.caret;
+      p.selStart = target.selectionStart ?? p.caret;
+      p.selEnd = target.selectionEnd ?? p.caret;
+      render();
+      scheduleSave();
+    }
   }
+
   for(const t of [ime,external]){
-    t.addEventListener("keyup",()=>{if(!composing)readSelection(t)});
+    t.addEventListener("keyup",()=>{
+      if(!composing)readSelection(t);
+    });
     t.addEventListener("click",()=>readSelection(t));
-    t.addEventListener("select",()=>{if(document.activeElement===t)readSelection(t)});
+    t.addEventListener("select",()=>{
+      if(document.activeElement===t)readSelection(t);
+    });
+  }
+
+  function scrollPaperIntoView(id){
+    if(!externalMode){
+      document.querySelector(`.paper[data-paper-id="${id}"]`)
+        ?.scrollIntoView({behavior:"smooth",block:"start"});
+      return;
+    }
+    const paper=papersPane?.querySelector(`.paper[data-paper-id="${id}"]`);
+    if(!papersPane||!paper)return;
+    const paneRect=papersPane.getBoundingClientRect();
+    const paperRect=paper.getBoundingClientRect();
+    papersPane.scrollTo({
+      top:papersPane.scrollTop+paperRect.top-paneRect.top-8,
+      behavior:"smooth"
+    });
   }
 
   function activatePaper(id,focus=true){
@@ -441,45 +801,56 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
   }
 
   document.querySelector("#newPaper").addEventListener("click",()=>{
-    const p={id:nextId++,text:"",caret:0,selStart:0,selEnd:0};
-    papers.push(p);
-    activatePaper(p.id);
-    document.querySelector(`[data-paper-id="${p.id}"]`)?.scrollIntoView({behavior:"smooth",block:"start"});
+    const pageCount = papers.length;
+    const { gridChars } = buildGridFromRawText(rawText);
+    const padNeeded = pageCount * CAPACITY - gridChars.length;
+    if (padNeeded > 0) {
+      rawText += " ".repeat(padNeeded);
+    }
+    updateFromRawText(rawText);
+    const newP = papers[papers.length - 1];
+    if (newP) {
+      activeId = newP.id;
+      render();
+      scrollPaperIntoView(activeId);
+    }
   });
-
-  function movePaper(delta){
-    const i=papers.findIndex(p=>p.id===activeId);
-    const target=papers[clamp(i+delta,0,papers.length-1)];
-    activatePaper(target.id);
-    document.querySelector(`[data-paper-id="${target.id}"]`)?.scrollIntoView({behavior:"smooth",block:"start"});
-  }
-  document.querySelector("#prev").addEventListener("click",()=>movePaper(-1));
-  document.querySelector("#next").addEventListener("click",()=>movePaper(1));
 
   document.querySelector("#deletePaper").addEventListener("click",()=>{
     if(papers.length<=1)return;
-    if(!confirm("确定删除当前纸张及其全部内容？此操作无法撤销。"))return;
-    const i=papers.findIndex(p=>p.id===activeId);
-    papers.splice(i,1);
-    activeId=papers[Math.max(0,i-1)].id;
-    syncInput();
-    render();
-    save();
+    if(!confirm("确定删除当前纸张及其全部内容？此操作无法撤销？"))return;
+    const activeIdx = papers.findIndex(p => p.id === activeId);
+    const startGrid = activeIdx * CAPACITY;
+    const endGrid = (activeIdx + 1) * CAPACITY;
+
+    let startRaw = gridToRawMap[startGrid] ?? rawText.length;
+    let endRaw = gridToRawMap[endGrid] ?? rawText.length;
+
+    rawText = rawText.slice(0, startRaw) + rawText.slice(endRaw);
+    activeId = papers[Math.max(0, activeIdx - 1)].id;
+    updateFromRawText(rawText);
+    focusInput();
+    scrollPaperIntoView(activeId);
   });
 
   document.querySelector("#clearBtn").addEventListener("click",()=>{
     if(!confirm("确定清空当前纸张的正文？"))return;
-    const p=current();
-    p.text="";
-    p.caret=p.selStart=p.selEnd=0;
-    syncInput();
-    render();
-    save();
+    const activeIdx = papers.findIndex(p => p.id === activeId);
+    const startGrid = activeIdx * CAPACITY;
+    const endGrid = (activeIdx + 1) * CAPACITY;
+
+    let startRaw = gridToRawMap[startGrid] ?? rawText.length;
+    let endRaw = gridToRawMap[endGrid] ?? rawText.length;
+
+    rawText = rawText.slice(0, startRaw) + rawText.slice(endRaw);
+    updateFromRawText(rawText);
     focusInput();
   });
 
   document.querySelector("#copyBtn").addEventListener("click",async()=>{
-    const all=papers.map((p,i)=>`【${pageName(i)}】\n${p.text.replace(/\s+$/,"")}`).join("\n\n");
+    const all=papers.map((p,i)=>
+      `【${pageName(i)}】\n${p.text.replace(/\s+$/,"")}`
+    ).join("\n\n");
     try{
       await navigator.clipboard.writeText(all);
       status.textContent="全文已复制";
@@ -509,11 +880,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
     render();
     focusInput();
     save();
+    if(externalMode){
+      requestAnimationFrame(()=>{
+        updateChromeHeight();
+        scrollPaperIntoView(activeId);
+      });
+    }
   });
 
   document.addEventListener("keydown",e=>{
     if(e.ctrlKey&&e.key.toLowerCase()==="s"){
-      e.preventDefault();save();
+      e.preventDefault();
+      save();
     }
     if(e.key==="Escape"){
       const p=current();
@@ -521,8 +899,9 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:0 12px 24px}
       render();
     }
   });
-  window.addEventListener("beforeunload",save);
 
+  window.addEventListener("resize",updateChromeHeight);
+  window.addEventListener("beforeunload",save);
   load();
 })();
 </script>
