@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paper</title>
+<title>Paper - 申论稿纸练习</title>
 <style>
 :root{
   --bg:#f0efeb;--paper:#fffefa;--text:#222220;--muted:#70706b;
@@ -30,7 +30,6 @@ body{
   font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif;
 }
 
-/* 按钮整体视觉加固：清晰、高对比度、绝不发灰，杜绝像 disabled 的情况 */
 button,select{
   font:inherit;font-weight:500;color:var(--text);background:var(--btn);
   border:1px solid var(--btn-border);border-radius:6px;padding:6px 13px;
@@ -78,9 +77,7 @@ button:disabled{
 button.toggle-active{
   background:var(--active);border-color:var(--accent);color:var(--accent);font-weight:600;
 }
-button.danger-action{
-  color:#b03434;border-color:#d49b9b;
-}
+button.danger-action{color:#b03434;border-color:#d49b9b}
 button.danger-action:hover{
   border-color:var(--danger);color:#fff;background:var(--danger);
 }
@@ -128,7 +125,7 @@ main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
   border-color:rgba(156,111,40,0.65);
 }
 
-/* 稿纸头部按钮：纯净深色字迹，完全清晰可用 */
+/* 稿纸头部 */
 .paper-head{
   display:flex;align-items:center;justify-content:space-between;
   gap:12px;margin-bottom:12px;
@@ -260,7 +257,7 @@ body.external .external-panel{display:flex;flex-direction:column}
   border:none;outline:none;
   background:transparent;color:var(--text);
 
-  font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",monospace;
+  font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
   font-size:16px;
   line-height:1.9;
   letter-spacing:0;
@@ -356,6 +353,24 @@ body.external .empty-note,body.external footer{display:none}
 }
 .toast-undo-btn:hover{filter:brightness(1.15)}
 
+/* 超大文本粘贴拦截模态框 */
+.paste-modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,0.45);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s ease;
+  backdrop-filter:blur(2px);
+}
+.paste-modal-backdrop.show{opacity:1;pointer-events:auto}
+.paste-modal{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  width:min(460px,92vw);padding:20px 24px;box-shadow:0 12px 32px rgba(0,0,0,0.18);
+  transform:scale(0.95);transition:transform .2s ease;
+}
+.paste-modal-backdrop.show .paste-modal{transform:scale(1)}
+.paste-modal h3{margin:0 0 10px;font-size:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+.paste-modal p{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.7}
+.paste-modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
 @media(max-width:800px){
   .stats{padding:8px 10px;gap:10px}
   .stat strong{font-size:15px}
@@ -386,7 +401,7 @@ body.external .empty-note,body.external footer{display:none}
   <div class="toolbar-left">
     <span class="brand">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      稿纸
+      申论稿纸
     </span>
     <span class="status" id="statusContainer">
       <span class="status-dot"></span>
@@ -427,7 +442,7 @@ body.external .empty-note,body.external footer{display:none}
 
 <main>
   <p class="help">
-    标准申论规格：每页 20 行 × 25 格（500 字）。支持<strong>鼠标按住滑动多选</strong>，按下 <strong>Ctrl+C / Cmd+C 复制选中文本</strong>。
+    标准申论规格：每页 20 行 × 25 格（500 字）。支持<strong>鼠标按住滑动多选</strong>；已加入 <strong>≥1万字超大粘贴安全拦截</strong>保护。
   </p>
   <div class="workspace">
     <!-- 左侧稿纸区 -->
@@ -463,17 +478,38 @@ body.external .empty-note,body.external footer{display:none}
 <footer>本地练习工具 · 内容保存在本机</footer>
 <textarea id="imeInput" aria-label="键盘输入" tabindex="-1"></textarea>
 
+<!-- 撤销 Toast -->
 <div id="toast" class="toast">
   <span id="toastMsg">已删除</span>
   <button id="undoBtn" class="toast-undo-btn">撤销</button>
+</div>
+
+<!-- 超过 10000 字粘贴防护模态框 -->
+<div id="pasteModalBackdrop" class="paste-modal-backdrop">
+  <div class="paste-modal">
+    <h3>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#faad14" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      检测到超大文本粘贴
+    </h3>
+    <p id="pasteModalDesc">
+      当前剪贴板包含超过 10,000 字。如果直接排入稿纸将生成大量网格，可能会引起浏览器短暂卡顿。
+    </p>
+    <div class="paste-modal-actions">
+      <button id="pasteCancelBtn">取消</button>
+      <button id="pasteTrimBtn" style="border-color:var(--accent);color:var(--accent);">仅粘贴前 3,000 字 (安全)</button>
+      <button id="pasteForceBtn" class="danger-action">仍要强制粘贴全部</button>
+    </div>
+  </div>
 </div>
 
 <script>
 (() => {
   "use strict";
 
-  const KEY = "essay-paper-practice-v16";
+  const KEY = "essay-paper-practice-v18";
   const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS; // 500 格
+  const PASTE_LIMIT = 10000;
+
   const papersEl = document.querySelector("#papers");
   const papersPane = document.querySelector(".papers-pane");
   const ime = document.querySelector("#imeInput");
@@ -488,6 +524,13 @@ body.external .empty-note,body.external footer{display:none}
   const rulerBadge = document.querySelector("#rulerBadge");
   const clearAllBtn = document.querySelector("#clearAllBtn");
 
+  const pasteModalBackdrop = document.querySelector("#pasteModalBackdrop");
+  const pasteModalDesc = document.querySelector("#pasteModalDesc");
+  const pasteCancelBtn = document.querySelector("#pasteCancelBtn");
+  const pasteTrimBtn = document.querySelector("#pasteTrimBtn");
+  const pasteForceBtn = document.querySelector("#pasteForceBtn");
+  let pendingPastePayload = null;
+
   let papers = [{ id: 1, cells: new Array(CAPACITY).fill(""), caret: 0, selStart: 0, selEnd: 0 }];
   let activeId = 1;
   let nextId = 2;
@@ -498,6 +541,7 @@ body.external .empty-note,body.external footer{display:none}
   let saveTimer = null;
   let undoTimer = null;
 
+  let isExternalComposing = false;
   let isSelecting = false;
   let selectAnchor = 0;
   let undoSnapshot = null;
@@ -515,19 +559,6 @@ body.external .empty-note,body.external footer{display:none}
     return ch;
   }
 
-  function normalizeToFullWidth(str) {
-    let out = "";
-    for (let i = 0; i < str.length; i++) {
-      const c = str[i];
-      if (c === "\r" || c === "\n") {
-        out += c;
-      } else {
-        out += toFullWidthChar(c);
-      }
-    }
-    return out;
-  }
-
   function toHalfWidthStr(str) {
     let out = "";
     for (let i = 0; i < str.length; i++) {
@@ -543,7 +574,6 @@ body.external .empty-note,body.external footer{display:none}
     return out;
   }
 
-  // 获取当前框选范围内的纯文本
   function getSelectedText(p) {
     if (!p || p.selStart === p.selEnd) return "";
     const min = Math.min(p.selStart, p.selEnd);
@@ -555,18 +585,15 @@ body.external .empty-note,body.external footer{display:none}
     return toHalfWidthStr(chars.join("").replace(/\s+$/, ""));
   }
 
-  // 核心系统剪贴板写入器（双重保险，百分之百复制成功）
   async function writeToClipboard(text) {
     if (!text) return false;
     let ok = false;
-    // 方案 1: 现代异步 API
     if (navigator.clipboard && window.isSecureContext) {
       try {
         await navigator.clipboard.writeText(text);
         ok = true;
       } catch (err) {}
     }
-    // 方案 2: 传统全局 DOM 借调兜底
     if (!ok) {
       try {
         const ta = document.createElement("textarea");
@@ -742,16 +769,17 @@ body.external .empty-note,body.external footer{display:none}
     external.value = gridToText();
   }
 
+  // 精准将隐藏输入代理移至当前活跃格
   function positionImeOverActiveCell() {
-    if (document.activeElement === external) return;
     const p = current();
+    if (!p) return;
     const cellEl = document.querySelector(`.paper[data-paper-id="${activeId}"] .cell[data-index="${p.caret}"]`);
     if (cellEl) {
       const rect = cellEl.getBoundingClientRect();
       ime.style.left = `${rect.left + window.scrollX}px`;
       ime.style.top = `${rect.top + window.scrollY}px`;
-      ime.style.width = `${rect.width}px`;
-      ime.style.height = `${rect.height}px`;
+      ime.style.width = `${Math.max(20, rect.width)}px`;
+      ime.style.height = `${Math.max(20, rect.height)}px`;
     }
   }
 
@@ -787,7 +815,7 @@ body.external .empty-note,body.external footer{display:none}
         activeId = p.id;
         render();
         syncToExternal();
-        focusInput();
+        focusInput(true);
         scheduleSave();
       }
     };
@@ -814,7 +842,6 @@ body.external .empty-note,body.external footer{display:none}
     const isCur = (p.id === activeId);
 
     const pageOffset = index * CAPACITY;
-
     const hasSelection = isCur && (p.selStart !== p.selEnd);
     const selMin = Math.min(p.selStart, p.selEnd);
     const selMax = Math.max(p.selStart, p.selEnd);
@@ -907,8 +934,13 @@ body.external .empty-note,body.external footer{display:none}
     positionImeOverActiveCell();
   }
 
-  function focusInput() {
-    if (document.activeElement === external) return;
+  // 修复核心：只要是在操作稿纸，无条件释放外部输入框的焦点，并把输入焦点交由稿纸代理
+  function focusInput(force = false) {
+    if (!force && document.activeElement === external) return;
+    if (document.activeElement === external) {
+      external.blur();
+    }
+    positionImeOverActiveCell();
     try {
       ime.focus({ preventScroll: true });
     } catch (e) {}
@@ -1025,10 +1057,16 @@ body.external .empty-note,body.external footer{display:none}
     scheduleSave();
   }
 
-  // ================= 鼠标滑动框选 =================
+  // 鼠标点击/框选稿纸
   papersEl.addEventListener("pointerdown", e => {
     const cell = e.target.closest(".cell");
     if (!cell) return;
+
+    // 若此前焦点在外部输入框，主动释放，避免焦点残留与意外输入
+    if (document.activeElement === external) {
+      external.blur();
+    }
+
     e.preventDefault();
     const paperEl = cell.closest(".paper");
     const p = papers.find(x => x.id === Number(paperEl.dataset.paperId));
@@ -1046,7 +1084,7 @@ body.external .empty-note,body.external footer{display:none}
 
     ime.value = "";
     render();
-    focusInput();
+    focusInput(true);
   });
 
   document.addEventListener("pointermove", e => {
@@ -1061,9 +1099,16 @@ body.external .empty-note,body.external footer{display:none}
     const idx = clamp(Number(cell.dataset.index), 0, CAPACITY - 1);
     const p = current();
 
-    p.selStart = Math.min(selectAnchor, idx);
-    p.selEnd = Math.max(selectAnchor, idx) + 1;
-    p.caret = idx;
+    // 修复：同格微颤不生成单字选区，杜绝误触发覆盖
+    if (idx === selectAnchor) {
+      p.selStart = idx;
+      p.selEnd = idx;
+      p.caret = idx;
+    } else {
+      p.selStart = Math.min(selectAnchor, idx);
+      p.selEnd = Math.max(selectAnchor, idx) + 1;
+      p.caret = idx;
+    }
 
     render();
   });
@@ -1071,21 +1116,73 @@ body.external .empty-note,body.external footer{display:none}
   document.addEventListener("pointerup", () => {
     if (!isSelecting) return;
     isSelecting = false;
-    focusInput();
+    focusInput(true);
     scheduleSave();
   });
 
-  // ================= 快捷键与选中复制核心拦截 =================
+  // 大文本拦截模态框处理
+  function handlePastePayload(text, targetChannel) {
+    if (!text) return;
+    if (text.length >= PASTE_LIMIT) {
+      pendingPastePayload = { text, targetChannel };
+      pasteModalDesc.innerHTML = `检测到准备粘贴的内容包含 <strong>${text.length}</strong> 字（约合 <strong>${Math.ceil(text.length / CAPACITY)}</strong> 页稿纸）。<br>一次性排版超万字可能导致浏览器短暂卡顿，请选择您的处理方式：`;
+      pasteModalBackdrop.classList.add("show");
+    } else {
+      executePaste(text, targetChannel);
+    }
+  }
+
+  function executePaste(text, targetChannel) {
+    if (targetChannel === "external") {
+      const start = external.selectionStart ?? external.value.length;
+      const end = external.selectionEnd ?? start;
+      const cur = external.value;
+      external.value = cur.slice(0, start) + text + cur.slice(end);
+      const newPos = start + text.length;
+      external.setSelectionRange(newPos, newPos);
+      syncFromExternal(true);
+    } else {
+      insertTextAtCaret(text);
+    }
+  }
+
+  pasteCancelBtn.addEventListener("click", () => {
+    pendingPastePayload = null;
+    pasteModalBackdrop.classList.remove("show");
+  });
+
+  pasteTrimBtn.addEventListener("click", () => {
+    if (!pendingPastePayload) return;
+    const safeText = pendingPastePayload.text.slice(0, 3000);
+    const target = pendingPastePayload.targetChannel;
+    pendingPastePayload = null;
+    pasteModalBackdrop.classList.remove("show");
+    executePaste(safeText, target);
+    status.textContent = `已截取前 3,000 字并完成粘贴`;
+  });
+
+  pasteForceBtn.addEventListener("click", () => {
+    if (!pendingPastePayload) return;
+    const allText = pendingPastePayload.text;
+    const target = pendingPastePayload.targetChannel;
+    pendingPastePayload = null;
+    pasteModalBackdrop.classList.remove("show");
+    status.textContent = `正在强制排版处理中，请稍候…`;
+    setTimeout(() => {
+      executePaste(allText, target);
+      status.textContent = `已强制粘贴全部 ${allText.length} 字`;
+    }, 50);
+  });
+
+  // 稿纸快捷键控制
   document.addEventListener("keydown", async (e) => {
     const isCtrl = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
 
-    // 如果焦点在外部输入框，走原生文本域行为
     if (document.activeElement === external) return;
 
     const p = current();
 
-    // 1. 复制选中文字 (Ctrl + C)
     if (isCtrl && key === "c") {
       const text = getSelectedText(p);
       if (text) {
@@ -1096,7 +1193,6 @@ body.external .empty-note,body.external footer{display:none}
       return;
     }
 
-    // 2. 剪切选中文字 (Ctrl + X)
     if (isCtrl && key === "x") {
       const text = getSelectedText(p);
       if (text) {
@@ -1111,17 +1207,15 @@ body.external .empty-note,body.external footer{display:none}
       return;
     }
 
-    // 3. 粘贴文字 (Ctrl + V)
     if (isCtrl && key === "v") {
       e.preventDefault();
       try {
         const clipText = await navigator.clipboard.readText();
-        if (clipText) insertTextAtCaret(clipText);
+        if (clipText) handlePastePayload(clipText, "grid");
       } catch (err) {}
       return;
     }
 
-    // 4. 全量撤销 (Ctrl + Z)
     if (isCtrl && key === "z") {
       if (undoSnapshot) {
         e.preventDefault();
@@ -1130,14 +1224,12 @@ body.external .empty-note,body.external footer{display:none}
       return;
     }
 
-    // 5. 取消选区 (Escape)
     if (e.key === "Escape") {
       p.selStart = p.selEnd = p.caret;
       render();
       return;
     }
 
-    // 6. 其它功能键
     if (!composing) {
       if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault();
@@ -1168,7 +1260,7 @@ body.external .empty-note,body.external footer{display:none}
     }
   });
 
-  // IME 拼音输入支持
+  // 稿纸输入代理通道
   ime.addEventListener("compositionstart", () => {
     composing = true;
     justComposed = false;
@@ -1193,21 +1285,31 @@ body.external .empty-note,body.external footer{display:none}
     ime.value = "";
   });
 
-  // ================= 外部输入规整 =================
-  function syncFromExternal() {
-    let rawVal = external.value;
+  // ================= 外部输入通道与光标隔离 =================
+  external.addEventListener("compositionstart", () => {
+    isExternalComposing = true;
+  });
 
-    const normalizedVal = normalizeToFullWidth(rawVal);
-    if (normalizedVal !== rawVal) {
-      const sStart = external.selectionStart;
-      const sEnd = external.selectionEnd;
-      external.value = normalizedVal;
-      try { external.setSelectionRange(sStart, sEnd); } catch(e) {}
-      rawVal = normalizedVal;
+  external.addEventListener("compositionend", () => {
+    isExternalComposing = false;
+    syncFromExternal(true);
+  });
+
+  external.addEventListener("paste", (e) => {
+    const pasteText = (e.clipboardData || window.clipboardData)?.getData("text");
+    if (pasteText && pasteText.length >= PASTE_LIMIT) {
+      e.preventDefault();
+      handlePastePayload(pasteText, "external");
     }
+  });
 
-    const val = rawVal;
-    const extCaret = external.selectionEnd ?? val.length;
+  // 修复核心：当焦点不在 external 上时，严禁覆盖稿纸的光标与正在编辑的活动纸张
+  function syncFromExternal(syncCaret = true) {
+    if (isExternalComposing) return;
+
+    const val = external.value;
+    const isExternalFocused = (document.activeElement === external);
+    const extCaret = (isExternalFocused && syncCaret) ? (external.selectionEnd ?? val.length) : -1;
 
     const allCells = [];
     let cursorGridIndex = -1;
@@ -1227,11 +1329,11 @@ body.external .empty-note,body.external footer{display:none}
           allCells.push("");
         }
       } else {
-        allCells.push(ch);
+        allCells.push(toFullWidthChar(ch));
       }
     }
 
-    if (cursorGridIndex === -1) {
+    if (isExternalFocused && syncCaret && cursorGridIndex === -1) {
       cursorGridIndex = allCells.length;
     }
 
@@ -1249,26 +1351,39 @@ body.external .empty-note,body.external footer{display:none}
       }
     }
 
-    const targetPIdx = Math.min(papers.length - 1, Math.floor(cursorGridIndex / CAPACITY));
-    activeId = papers[targetPIdx].id;
-    papers[targetPIdx].caret = cursorGridIndex % CAPACITY;
-    papers[targetPIdx].selStart = papers[targetPIdx].selEnd = papers[targetPIdx].caret;
+    // 仅当用户在外部输入框中主动移动光标或打字时，才把光标推给稿纸
+    if (isExternalFocused && syncCaret && cursorGridIndex !== -1) {
+      const targetPIdx = Math.min(papers.length - 1, Math.floor(cursorGridIndex / CAPACITY));
+      activeId = papers[targetPIdx].id;
+      papers[targetPIdx].caret = cursorGridIndex % CAPACITY;
+      papers[targetPIdx].selStart = papers[targetPIdx].selEnd = papers[targetPIdx].caret;
+    }
 
     render();
     scheduleSave();
   }
 
-  external.addEventListener("input", syncFromExternal);
-  external.addEventListener("keyup", syncFromExternal);
-  external.addEventListener("click", syncFromExternal);
-  external.addEventListener("select", syncFromExternal);
+  external.addEventListener("input", () => syncFromExternal(true));
+
+  // 移除了容易引起失焦瞬间误触发的 select 事件监听，改为安全的按键与鼠标抬起判定
+  const onExternalCursorMove = () => {
+    if (document.activeElement === external && !isExternalComposing) {
+      syncFromExternal(true);
+    }
+  };
+  external.addEventListener("mouseup", onExternalCursorMove);
+  external.addEventListener("keyup", (e) => {
+    if (!isExternalComposing && (e.key.startsWith("Arrow") || e.key === "Home" || e.key === "End")) {
+      onExternalCursorMove();
+    }
+  });
 
   newPaperBottom.addEventListener("click", () => {
     const newP = { id: nextId++, cells: new Array(CAPACITY).fill(""), caret: 0, selStart: 0, selEnd: 0 };
     papers.push(newP);
     activeId = newP.id;
     render();
-    focusInput();
+    focusInput(true);
     scheduleSave();
 
     setTimeout(() => {
@@ -1277,7 +1392,6 @@ body.external .empty-note,body.external footer{display:none}
     }, 40);
   });
 
-  // 单纸删除
   function deletePaper(paperId) {
     if (papers.length <= 1) return;
     const idx = papers.findIndex(p => p.id === paperId);
@@ -1296,7 +1410,7 @@ body.external .empty-note,body.external footer{display:none}
 
     render();
     syncToExternal();
-    focusInput();
+    focusInput(true);
     scheduleSave();
 
     toastMsg.textContent = `已删除第 ${idx + 1} 张纸`;
@@ -1309,7 +1423,6 @@ body.external .empty-note,body.external footer{display:none}
     }, 6000);
   }
 
-  // 全量清空
   clearAllBtn.addEventListener("click", () => {
     const { totalPhysical } = getExamPhysicalCounts();
     if (totalPhysical === 0 && papers.length === 1) return;
@@ -1328,7 +1441,7 @@ body.external .empty-note,body.external footer{display:none}
 
     render();
     syncToExternal();
-    focusInput();
+    focusInput(true);
     scheduleSave();
 
     toastMsg.textContent = "已清空全部内容";
@@ -1357,11 +1470,10 @@ body.external .empty-note,body.external footer{display:none}
     toast.classList.remove("show");
     render();
     syncToExternal();
-    focusInput();
+    focusInput(true);
     scheduleSave();
   });
 
-  // 复制全文
   document.querySelector("#copyBtn").addEventListener("click", async () => {
     const all = papers.map((p, i) => {
       let rows = [];
@@ -1389,7 +1501,7 @@ body.external .empty-note,body.external footer{display:none}
     updateToolbar();
     syncToExternal();
     render();
-    focusInput();
+    focusInput(true);
     save();
     updateBadge();
   });
