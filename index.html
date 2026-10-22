@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paper - 申论稿纸练习</title>
+<title>Paper</title>
 <style>
 :root{
   --bg:#f0efeb;--paper:#fffefa;--text:#222220;--muted:#70706b;
@@ -32,7 +32,7 @@ body{
 
 button,select{
   font:inherit;font-weight:500;color:var(--text);background:var(--btn);
-  border:1px solid var(--btn-border);border-radius:6px;padding:6px 13px;
+  border:1px solid var(--btn-border);border-radius:6px;padding:6px 12px;
   cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
   gap:6px;white-space:nowrap;transition:all .15s ease;
   box-shadow:0 1px 2px rgba(0,0,0,0.06);
@@ -45,6 +45,7 @@ button:active{transform:translateY(1px)}
 button:disabled{
   opacity:.35!important;cursor:not-allowed!important;
   box-shadow:none!important;border-color:var(--line)!important;color:var(--muted)!important;
+  transform:none!important;
 }
 
 /* 顶部统一定位容器：让工具栏与统计栏整体吸顶常驻 */
@@ -67,6 +68,8 @@ button:disabled{
   display:inline-flex;align-items:center;gap:5px;
   font-size:11px;font-weight:500;color:var(--text);background:var(--bg);
   padding:3px 9px;border-radius:12px;border:1px solid var(--line);
+  position:relative;
+  user-select:none;
 }
 .status-dot{
   width:6px;height:6px;border-radius:50%;
@@ -75,7 +78,7 @@ button:disabled{
 .status.saving .status-dot{background:#faad14}
 
 .toolbar-center{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;flex:1;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:1;
 }
 .toolbar button svg{width:14px;height:14px;flex-shrink:0}
 button.toggle-active{
@@ -103,7 +106,7 @@ button.danger-action:hover{
 .progress{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:500}
 
 @media(max-width:860px){
-  .toolbar{padding:6px 10px;gap:8px}
+  .toolbar{padding:6px 10px;gap:6px}
   .button-label{font-size:12px}
   .status{display:none}
 }
@@ -166,6 +169,75 @@ main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
 .new-paper-bottom-btn svg{width:18px;height:18px;stroke-width:2.2}
 .new-paper-bottom-btn:hover{
   border-color:var(--accent);background:var(--paper);transform:translateY(-1px);
+}
+
+/* 问号小图标及悬浮气泡 */
+.status-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  margin-left: 2px;
+  position: relative;
+}
+.status-help svg {
+  width: 12px;
+  height: 12px;
+  transition: color 0.15s ease;
+}
+.status-help:hover svg {
+  color: var(--accent);
+}
+
+/* 气泡卡片主体优化：放宽尺寸并增大字体 */
+.status-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  width: 290px;
+  padding: 10px 14px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: normal;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.status-tooltip strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--accent);
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+/* 顶部小三角形 */
+.status-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent var(--line) transparent;
+}
+
+/* 鼠标移入整个药丸或问号时触发显示 */
+.status:hover .status-tooltip,
+.status-help:hover .status-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* 网格区 */
@@ -341,7 +413,7 @@ body.external .external-panel{
 }
 body.external .empty-note,body.external footer{display:none}
 
-/* 撤销提示悬浮 Toast */
+/* 提示悬浮 Toast */
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
   background:#26282d;color:#fff;padding:10px 18px;border-radius:8px;
@@ -400,21 +472,42 @@ body.external .empty-note,body.external footer{display:none}
 </head>
 <body>
 
-<!-- 将工具栏与统计栏包装进同一个吸顶容器中 -->
 <header class="top-bar-wrapper">
   <div class="toolbar">
     <div class="toolbar-left">
       <span class="brand">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        申论稿纸
+        稿纸
       </span>
+
       <span class="status" id="statusContainer">
         <span class="status-dot"></span>
         <span id="status">已就绪</span>
+        <span class="status-help" aria-label="存储说明">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="status-tooltip">
+            <strong>本地安全存储说明</strong>
+            稿件内容实时保存在本机的浏览器缓存（LocalStorage）中，关闭或刷新页面不会丢失，无需担心数据泄露。
+          </span>
+        </span>
       </span>
     </div>
 
     <div class="toolbar-center">
+      <!-- 撤销与重做工具栏按钮 -->
+      <button id="undoToolbarBtn" title="撤销操作 (Ctrl+Z)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        <span class="button-label">撤销</span>
+      </button>
+      <button id="redoToolbarBtn" title="恢复重做 (Ctrl+Y)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+        <span class="button-label">重做</span>
+      </button>
+
       <button id="externalToggle" title="分屏同步显示/关闭外部文本框">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
         <span class="button-label">外部输入</span>
@@ -475,13 +568,12 @@ body.external .empty-note,body.external footer{display:none}
       </div>
     </section>
   </div>
-  <div class="empty-note">正文保存在当前浏览器。清理浏览器缓存前，请先复制备份。</div>
 </main>
 
 <footer>本地练习工具 · 内容保存在本机</footer>
 <textarea id="imeInput" aria-label="键盘输入" tabindex="-1"></textarea>
 
-<!-- 撤销 Toast -->
+<!-- 操作提示 Toast -->
 <div id="toast" class="toast">
   <span id="toastMsg">已删除</span>
   <button id="undoBtn" class="toast-undo-btn">撤销</button>
@@ -512,6 +604,7 @@ body.external .empty-note,body.external footer{display:none}
   const KEY = "essay-paper-practice-v18";
   const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS;
   const PASTE_LIMIT = 10000;
+  const MAX_HISTORY = 60; // 最多保留 60 步撤销历史
 
   const papersEl = document.querySelector("#papers");
   const papersPane = document.querySelector(".papers-pane");
@@ -522,6 +615,8 @@ body.external .empty-note,body.external footer{display:none}
   const toast = document.querySelector("#toast");
   const toastMsg = document.querySelector("#toastMsg");
   const undoBtn = document.querySelector("#undoBtn");
+  const undoToolbarBtn = document.querySelector("#undoToolbarBtn");
+  const redoToolbarBtn = document.querySelector("#redoToolbarBtn");
   const newPaperBottom = document.querySelector("#newPaperBottom");
   const resizer = document.querySelector("#workspaceResizer");
   const rulerBadge = document.querySelector("#rulerBadge");
@@ -542,12 +637,127 @@ body.external .empty-note,body.external footer{display:none}
   let composing = false;
   let justComposed = false;
   let saveTimer = null;
-  let undoTimer = null;
+  let toastTimer = null;
 
   let isExternalComposing = false;
   let isSelecting = false;
   let selectAnchor = 0;
-  let undoSnapshot = null;
+
+  // ================= 历史记录栈管理器 =================
+  let undoStack = [];
+  let redoStack = [];
+  let isContinuousTyping = false;
+  let typingBatchTimer = null;
+
+  function cloneCurrentState() {
+    return {
+      papers: papers.map(p => ({
+        id: p.id,
+        cells: p.cells.slice(),
+        caret: p.caret,
+        selStart: p.selStart,
+        selEnd: p.selEnd
+      })),
+      activeId: activeId,
+      nextId: nextId
+    };
+  }
+
+  function updateHistoryUI() {
+    undoToolbarBtn.disabled = (undoStack.length === 0);
+    redoToolbarBtn.disabled = (redoStack.length === 0);
+  }
+
+  // 记录历史快照：mode 为 "discrete" 表示离散动作，"input" 表示连续打字防抖批次
+  function recordHistory(mode = "discrete") {
+    if (mode === "discrete") {
+      clearTimeout(typingBatchTimer);
+      isContinuousTyping = false;
+      undoStack.push(cloneCurrentState());
+      if (undoStack.length > MAX_HISTORY) undoStack.shift();
+      redoStack = []; // 产生新分支，清空重做栈
+      updateHistoryUI();
+      return;
+    }
+
+    if (mode === "input") {
+      if (!isContinuousTyping) {
+        // 连续打字的第一笔：保存打字前的干净状态
+        undoStack.push(cloneCurrentState());
+        if (undoStack.length > MAX_HISTORY) undoStack.shift();
+        redoStack = [];
+        updateHistoryUI();
+        isContinuousTyping = true;
+      }
+      clearTimeout(typingBatchTimer);
+      typingBatchTimer = setTimeout(() => {
+        isContinuousTyping = false;
+      }, 850);
+    }
+  }
+
+  function undo() {
+    clearTimeout(typingBatchTimer);
+    isContinuousTyping = false;
+    if (undoStack.length === 0) return;
+
+    // 当前状态压入重做栈
+    redoStack.push(cloneCurrentState());
+    if (redoStack.length > MAX_HISTORY) redoStack.shift();
+
+    // 弹出上一历史状态并恢复
+    const prevState = undoStack.pop();
+    papers = prevState.papers;
+    activeId = prevState.activeId;
+    nextId = prevState.nextId;
+
+    render();
+    syncToExternal();
+    focusInput(true);
+    scheduleSave();
+    updateHistoryUI();
+    showToast("已撤销", false);
+  }
+
+  function redo() {
+    clearTimeout(typingBatchTimer);
+    isContinuousTyping = false;
+    if (redoStack.length === 0) return;
+
+    // 当前状态压入撤销栈
+    undoStack.push(cloneCurrentState());
+    if (undoStack.length > MAX_HISTORY) undoStack.shift();
+
+    // 弹出重做状态并恢复
+    const nextState = redoStack.pop();
+    papers = nextState.papers;
+    activeId = nextState.activeId;
+    nextId = nextState.nextId;
+
+    render();
+    syncToExternal();
+    focusInput(true);
+    scheduleSave();
+    updateHistoryUI();
+    showToast("已重做", false);
+  }
+
+  function showToast(msg, showUndoButton = true) {
+    toastMsg.textContent = msg;
+    undoBtn.style.display = showUndoButton ? "inline-block" : "none";
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3500);
+  }
+
+  undoToolbarBtn.addEventListener("click", undo);
+  redoToolbarBtn.addEventListener("click", redo);
+  undoBtn.addEventListener("click", () => {
+    undo();
+    toast.classList.remove("show");
+  });
 
   const clamp = (n, min, max) => Math.max(min, Math.min(Number(n) || 0, max));
   const current = () => papers.find(p => p.id === activeId) || papers[0];
@@ -747,6 +957,7 @@ body.external .empty-note,body.external footer{display:none}
     syncToExternal();
     updateChromeHeight();
     updateBadge();
+    updateHistoryUI();
   }
 
   function updateChromeHeight() {
@@ -810,6 +1021,7 @@ body.external .empty-note,body.external footer{display:none}
       e.stopPropagation();
       let hasContent = p.cells.some(c => c !== "");
       if (!hasContent || confirm(`确定清空【${pageName(index)}】的全部文字吗？`)) {
+        recordHistory("discrete");
         p.cells.fill("");
         p.caret = 0;
         p.selStart = p.selEnd = 0;
@@ -818,6 +1030,7 @@ body.external .empty-note,body.external footer{display:none}
         syncToExternal();
         focusInput(true);
         scheduleSave();
+        showToast(`已清空【${pageName(index)}】`, true);
       }
     };
 
@@ -932,6 +1145,7 @@ body.external .empty-note,body.external footer{display:none}
       `当前在第 ${papers.findIndex(x => x.id === activeId) + 1} 页 · 卷面累计至第 ${totalPhysical} 格`;
 
     updateToolbar();
+    updateHistoryUI();
     positionImeOverActiveCell();
   }
 
@@ -959,7 +1173,8 @@ body.external .empty-note,body.external footer{display:none}
     p.selStart = p.selEnd = min;
   }
 
-  function insertTextAtCaret(str) {
+  function insertTextAtCaret(str, isPasteAction = false) {
+    recordHistory(isPasteAction ? "discrete" : "input");
     let p = current();
 
     if (p.selStart !== p.selEnd) {
@@ -1021,6 +1236,7 @@ body.external .empty-note,body.external footer{display:none}
   }
 
   function handleBackspace() {
+    recordHistory("input");
     let p = current();
 
     if (p.selStart !== p.selEnd) {
@@ -1130,6 +1346,7 @@ body.external .empty-note,body.external footer{display:none}
   }
 
   function executePaste(text, targetChannel) {
+    recordHistory("discrete");
     if (targetChannel === "external") {
       const start = external.selectionStart ?? external.value.length;
       const end = external.selectionEnd ?? start;
@@ -1139,7 +1356,7 @@ body.external .empty-note,body.external footer{display:none}
       external.setSelectionRange(newPos, newPos);
       syncFromExternal(true);
     } else {
-      insertTextAtCaret(text);
+      insertTextAtCaret(text, true);
     }
   }
 
@@ -1171,9 +1388,24 @@ body.external .empty-note,body.external footer{display:none}
     }, 50);
   });
 
+  // 全局快捷键分发
   document.addEventListener("keydown", async (e) => {
     const isCtrl = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
+
+    // 撤销快捷键 Ctrl+Z
+    if (isCtrl && key === "z" && !e.shiftKey) {
+      e.preventDefault();
+      undo();
+      return;
+    }
+
+    // 重做快捷键 Ctrl+Y 或 Ctrl+Shift+Z
+    if ((isCtrl && key === "y") || (isCtrl && key === "z" && e.shiftKey)) {
+      e.preventDefault();
+      redo();
+      return;
+    }
 
     if (document.activeElement === external) return;
 
@@ -1194,6 +1426,7 @@ body.external .empty-note,body.external footer{display:none}
       if (text) {
         e.preventDefault();
         await writeToClipboard(text);
+        recordHistory("discrete");
         deleteSelection(p);
         render();
         syncToExternal();
@@ -1209,14 +1442,6 @@ body.external .empty-note,body.external footer{display:none}
         const clipText = await navigator.clipboard.readText();
         if (clipText) handlePastePayload(clipText, "grid");
       } catch (err) {}
-      return;
-    }
-
-    if (isCtrl && key === "z") {
-      if (undoSnapshot) {
-        e.preventDefault();
-        undoBtn.click();
-      }
       return;
     }
 
@@ -1286,6 +1511,7 @@ body.external .empty-note,body.external footer{display:none}
 
   external.addEventListener("compositionend", () => {
     isExternalComposing = false;
+    recordHistory("input");
     syncFromExternal(true);
   });
 
@@ -1355,7 +1581,10 @@ body.external .empty-note,body.external footer{display:none}
     scheduleSave();
   }
 
-  external.addEventListener("input", () => syncFromExternal(true));
+  external.addEventListener("input", () => {
+    recordHistory("input");
+    syncFromExternal(true);
+  });
 
   const onExternalCursorMove = () => {
     if (document.activeElement === external && !isExternalComposing) {
@@ -1370,6 +1599,7 @@ body.external .empty-note,body.external footer{display:none}
   });
 
   newPaperBottom.addEventListener("click", () => {
+    recordHistory("discrete");
     const newP = { id: nextId++, cells: new Array(CAPACITY).fill(""), caret: 0, selStart: 0, selEnd: 0 };
     papers.push(newP);
     activeId = newP.id;
@@ -1388,14 +1618,7 @@ body.external .empty-note,body.external footer{display:none}
     const idx = papers.findIndex(p => p.id === paperId);
     if (idx === -1) return;
 
-    const paperToDelete = papers[idx];
-
-    undoSnapshot = {
-      type: "single",
-      paper: JSON.parse(JSON.stringify(paperToDelete)),
-      index: idx
-    };
-
+    recordHistory("discrete");
     papers.splice(idx, 1);
     activeId = papers[Math.max(0, idx - 1)].id;
 
@@ -1403,15 +1626,7 @@ body.external .empty-note,body.external footer{display:none}
     syncToExternal();
     focusInput(true);
     scheduleSave();
-
-    toastMsg.textContent = `已删除第 ${idx + 1} 张纸`;
-    toast.classList.add("show");
-
-    clearTimeout(undoTimer);
-    undoTimer = setTimeout(() => {
-      toast.classList.remove("show");
-      undoSnapshot = null;
-    }, 6000);
+    showToast(`已删除第 ${idx + 1} 张纸`, true);
   }
 
   clearAllBtn.addEventListener("click", () => {
@@ -1420,11 +1635,7 @@ body.external .empty-note,body.external footer{display:none}
 
     if (!confirm("确定清空全部纸张与文字？(此操作支持随时撤销)")) return;
 
-    undoSnapshot = {
-      type: "all",
-      papers: JSON.parse(JSON.stringify(papers)),
-      activeId: activeId
-    };
+    recordHistory("discrete");
 
     papers = [{ id: 1, cells: new Array(CAPACITY).fill(""), caret: 0, selStart: 0, selEnd: 0 }];
     activeId = 1;
@@ -1434,35 +1645,7 @@ body.external .empty-note,body.external footer{display:none}
     syncToExternal();
     focusInput(true);
     scheduleSave();
-
-    toastMsg.textContent = "已清空全部内容";
-    toast.classList.add("show");
-
-    clearTimeout(undoTimer);
-    undoTimer = setTimeout(() => {
-      toast.classList.remove("show");
-      undoSnapshot = null;
-    }, 7000);
-  });
-
-  undoBtn.addEventListener("click", () => {
-    if (!undoSnapshot) return;
-
-    if (undoSnapshot.type === "single") {
-      papers.splice(undoSnapshot.index, 0, undoSnapshot.paper);
-      activeId = undoSnapshot.paper.id;
-    } else if (undoSnapshot.type === "all") {
-      papers = undoSnapshot.papers;
-      activeId = undoSnapshot.activeId;
-      nextId = Math.max(...papers.map(p => p.id), 1) + 1;
-    }
-
-    undoSnapshot = null;
-    toast.classList.remove("show");
-    render();
-    syncToExternal();
-    focusInput(true);
-    scheduleSave();
+    showToast("已清空全部内容", true);
   });
 
   document.querySelector("#copyBtn").addEventListener("click", async () => {
