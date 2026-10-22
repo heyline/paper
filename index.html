@@ -47,13 +47,17 @@ button:disabled{
   box-shadow:none!important;border-color:var(--line)!important;color:var(--muted)!important;
 }
 
+/* 顶部统一定位容器：让工具栏与统计栏整体吸顶常驻 */
+.top-bar-wrapper{
+  position:sticky;top:0;z-index:20;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
 /* 顶部工具栏 */
 .toolbar{
-  position:sticky;top:0;z-index:20;
   display:flex;align-items:center;justify-content:space-between;
   padding:7px 16px;background:var(--panel);
   border-bottom:1px solid var(--line);gap:12px;
-  box-shadow:0 1px 4px rgba(0,0,0,0.03);
 }
 .toolbar-left{display:flex;align-items:center;gap:12px;flex-shrink:0}
 .brand{font-weight:700;font-size:15px;letter-spacing:0.5px;display:flex;align-items:center;gap:6px}
@@ -204,8 +208,7 @@ main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
 @keyframes blink{50%{opacity:0}}
 .paper-footer{
   display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:gap:8px;margin-top:12px;
-  font-size:12px;color:var(--muted);
+  margin-top:12px;font-size:12px;color:var(--muted);gap:8px;
 }
 .active-tag{color:var(--accent)!important}
 .counter-mark{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
@@ -397,53 +400,53 @@ body.external .empty-note,body.external footer{display:none}
 </head>
 <body>
 
-<header class="toolbar">
-  <div class="toolbar-left">
-    <span class="brand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      申论稿纸
-    </span>
-    <span class="status" id="statusContainer">
-      <span class="status-dot"></span>
-      <span id="status">已就绪</span>
-    </span>
+<!-- 将工具栏与统计栏包装进同一个吸顶容器中 -->
+<header class="top-bar-wrapper">
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <span class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        申论稿纸
+      </span>
+      <span class="status" id="statusContainer">
+        <span class="status-dot"></span>
+        <span id="status">已就绪</span>
+      </span>
+    </div>
+
+    <div class="toolbar-center">
+      <button id="externalToggle" title="分屏同步显示/关闭外部文本框">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+        <span class="button-label">外部输入</span>
+      </button>
+      <button id="copyBtn" title="复制全部稿纸纯文本">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+        <span class="button-label">复制全文</span>
+      </button>
+      <button id="clearAllBtn" class="danger-action" title="清空全部纸张内容并恢复初始状态">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>
+        <span class="button-label">清空全文</span>
+      </button>
+      <button id="themeToggle" class="icon-btn" title="切换明暗主题" aria-label="切换明暗主题">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3-1.42-1.42"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <div class="toolbar-center">
-    <button id="externalToggle" title="分屏同步显示/关闭外部文本框">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
-      <span class="button-label">外部输入</span>
-    </button>
-    <button id="copyBtn" title="复制全部稿纸纯文本">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
-      <span class="button-label">复制全文</span>
-    </button>
-    <button id="clearAllBtn" class="danger-action" title="清空全部纸张内容并恢复初始状态">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>
-      <span class="button-label">清空全文</span>
-    </button>
-    <button id="themeToggle" class="icon-btn" title="切换明暗主题" aria-label="切换明暗主题">
-      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="4"/>
-        <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3-1.42-1.42"/>
-      </svg>
-    </button>
+  <div class="stats">
+    <div class="stats-items">
+      <div class="stat"><small>卷面总占格</small><strong id="totalCount" style="color:var(--accent);">0</strong><span class="unit">格/字</span></div>
+      <div class="stat"><small>当前纸已写</small><strong id="currentCount">0</strong><span class="unit">格</span></div>
+      <div class="stat"><small>总纸数</small><strong id="paperCount">1</strong><span class="unit">张</span></div>
+    </div>
+    <div class="progress" id="progress">卷面位置: 第 1 页</div>
   </div>
 </header>
 
-<div class="stats">
-  <div class="stats-items">
-    <div class="stat"><small>卷面总占格</small><strong id="totalCount" style="color:var(--accent);">0</strong><span class="unit">格/字</span></div>
-    <div class="stat"><small>当前纸已写</small><strong id="currentCount">0</strong><span class="unit">格</span></div>
-    <div class="stat"><small>总纸数</small><strong id="paperCount">1</strong><span class="unit">张</span></div>
-  </div>
-  <div class="progress" id="progress">卷面位置: 第 1 页</div>
-</div>
-
 <main>
-  <p class="help">
-    标准申论规格：每页 20 行 × 25 格（500 字）。支持<strong>鼠标按住滑动多选</strong>；已加入 <strong>≥1万字超大粘贴安全拦截</strong>保护。
-  </p>
   <div class="workspace">
     <!-- 左侧稿纸区 -->
     <div class="papers-pane">
@@ -507,7 +510,7 @@ body.external .empty-note,body.external footer{display:none}
   "use strict";
 
   const KEY = "essay-paper-practice-v18";
-  const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS; // 500 格
+  const COLS = 25, ROWS = 20, CAPACITY = COLS * ROWS;
   const PASTE_LIMIT = 10000;
 
   const papersEl = document.querySelector("#papers");
@@ -747,9 +750,8 @@ body.external .empty-note,body.external footer{display:none}
   }
 
   function updateChromeHeight() {
-    const toolbar = document.querySelector(".toolbar");
-    const stats = document.querySelector(".stats");
-    const height = (toolbar?.offsetHeight || 0) + (stats?.offsetHeight || 0);
+    const topBar = document.querySelector(".top-bar-wrapper");
+    const height = topBar?.offsetHeight || 105;
     document.documentElement.style.setProperty("--chrome-height", `${height}px`);
   }
 
@@ -769,7 +771,6 @@ body.external .empty-note,body.external footer{display:none}
     external.value = gridToText();
   }
 
-  // 精准将隐藏输入代理移至当前活跃格
   function positionImeOverActiveCell() {
     const p = current();
     if (!p) return;
@@ -934,7 +935,6 @@ body.external .empty-note,body.external footer{display:none}
     positionImeOverActiveCell();
   }
 
-  // 修复核心：只要是在操作稿纸，无条件释放外部输入框的焦点，并把输入焦点交由稿纸代理
   function focusInput(force = false) {
     if (!force && document.activeElement === external) return;
     if (document.activeElement === external) {
@@ -1062,7 +1062,6 @@ body.external .empty-note,body.external footer{display:none}
     const cell = e.target.closest(".cell");
     if (!cell) return;
 
-    // 若此前焦点在外部输入框，主动释放，避免焦点残留与意外输入
     if (document.activeElement === external) {
       external.blur();
     }
@@ -1099,7 +1098,6 @@ body.external .empty-note,body.external footer{display:none}
     const idx = clamp(Number(cell.dataset.index), 0, CAPACITY - 1);
     const p = current();
 
-    // 修复：同格微颤不生成单字选区，杜绝误触发覆盖
     if (idx === selectAnchor) {
       p.selStart = idx;
       p.selEnd = idx;
@@ -1120,7 +1118,6 @@ body.external .empty-note,body.external footer{display:none}
     scheduleSave();
   });
 
-  // 大文本拦截模态框处理
   function handlePastePayload(text, targetChannel) {
     if (!text) return;
     if (text.length >= PASTE_LIMIT) {
@@ -1174,7 +1171,6 @@ body.external .empty-note,body.external footer{display:none}
     }, 50);
   });
 
-  // 稿纸快捷键控制
   document.addEventListener("keydown", async (e) => {
     const isCtrl = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
@@ -1260,7 +1256,6 @@ body.external .empty-note,body.external footer{display:none}
     }
   });
 
-  // 稿纸输入代理通道
   ime.addEventListener("compositionstart", () => {
     composing = true;
     justComposed = false;
@@ -1285,7 +1280,6 @@ body.external .empty-note,body.external footer{display:none}
     ime.value = "";
   });
 
-  // ================= 外部输入通道与光标隔离 =================
   external.addEventListener("compositionstart", () => {
     isExternalComposing = true;
   });
@@ -1303,7 +1297,6 @@ body.external .empty-note,body.external footer{display:none}
     }
   });
 
-  // 修复核心：当焦点不在 external 上时，严禁覆盖稿纸的光标与正在编辑的活动纸张
   function syncFromExternal(syncCaret = true) {
     if (isExternalComposing) return;
 
@@ -1351,7 +1344,6 @@ body.external .empty-note,body.external footer{display:none}
       }
     }
 
-    // 仅当用户在外部输入框中主动移动光标或打字时，才把光标推给稿纸
     if (isExternalFocused && syncCaret && cursorGridIndex !== -1) {
       const targetPIdx = Math.min(papers.length - 1, Math.floor(cursorGridIndex / CAPACITY));
       activeId = papers[targetPIdx].id;
@@ -1365,7 +1357,6 @@ body.external .empty-note,body.external footer{display:none}
 
   external.addEventListener("input", () => syncFromExternal(true));
 
-  // 移除了容易引起失焦瞬间误触发的 select 事件监听，改为安全的按键与鼠标抬起判定
   const onExternalCursorMove = () => {
     if (document.activeElement === external && !isExternalComposing) {
       syncFromExternal(true);
